@@ -13,9 +13,9 @@ export function LogoutButton() {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+      className="inline-flex items-center gap-2 rounded-full h-9 px-3.5 text-sm text-muted hover:bg-surface hover:text-heading transition-colors"
     >
-      <LogOut className="w-4 h-4" />
+      <LogOut className="h-4 w-4" />
       Sair
     </button>
   );

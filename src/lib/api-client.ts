@@ -1,7 +1,8 @@
-import { cookies } from 'next/headers';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-const COOKIE_NAME = 'access_token';
+/**
+ * Browser-side fetch wrapper. Talks to our OWN /api/* Route Handlers so
+ * httpOnly cookies flow correctly. Server-side reads live in ./api-server.ts
+ * (imports next/headers, cannot be bundled for the client).
+ */
 
 export interface ApiError extends Error {
   status: number;
@@ -15,19 +16,6 @@ function toApiError(status: number, body: unknown, fallback: string): ApiError {
   err.status = status;
   err.code = b?.error?.code;
   return err;
-}
-
-export async function api<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
-  const store = await cookies();
-  const token = store.get(COOKIE_NAME)?.value;
-  const headers = new Headers(init.headers);
-  if (token) headers.set('Authorization', `Bearer ${token}`);
-  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
-  const res = await fetch(BASE_URL + path, { ...init, headers, cache: 'no-store' });
-  const contentType = res.headers.get('content-type') ?? '';
-  const body: unknown = contentType.includes('application/json') ? await res.json() : await res.text();
-  if (!res.ok) throw toApiError(res.status, body, 'Erro ao chamar a API');
-  return body as T;
 }
 
 export async function apiClient<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {

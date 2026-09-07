@@ -6,6 +6,11 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { loginInput, type LoginInput } from '@/lib/schemas';
 import { apiClient } from '@/lib/api-client';
+import { RingsLogo } from '@/components/rings-logo';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,52 +33,58 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 py-12 bg-muted/30">
-      <div className="w-full max-w-md rounded-lg border bg-card p-8 shadow-sm">
-        <h1 className="text-2xl font-bold tracking-tight">Entrar</h1>
-        <p className="text-sm text-muted-foreground mt-1">Use o e-mail que você cadastrou.</p>
+    <main className="min-h-screen bg-bg flex flex-col">
+      <div className="w-full border-b border-rule">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 font-display text-lg text-heading">
+            <RingsLogo size={32} />
+            LOVE Casal
+          </Link>
+          <ThemeToggle />
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium">E-mail</label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register('email')}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            {formState.errors.email && (
-              <p className="text-xs text-destructive">{formState.errors.email.message}</p>
-            )}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="mb-8 text-center">
+            <p className="type-eyebrow mb-3">— entrar</p>
+            <h1 className="font-display text-4xl text-heading tracking-tight mb-2">
+              Que bom te ver.
+            </h1>
+            <p className="text-sm text-muted">Use o e-mail que você cadastrou.</p>
           </div>
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium">Senha</label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              {...register('password')}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            {formState.errors.password && (
-              <p className="text-xs text-destructive">{formState.errors.password.message}</p>
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={formState.isSubmitting}
-            className="w-full inline-flex h-10 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
-          >
-            {formState.isSubmitting ? 'Entrando...' : 'Entrar'}
-          </button>
-          <p className="text-sm text-center text-muted-foreground">
-            Não tem conta ainda?{' '}
-            <Link href="/registrar" className="text-primary hover:underline">
-              Criar conta
-            </Link>
-          </p>
-        </form>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" type="email" autoComplete="email" {...register('email')} />
+              {formState.errors.email && (
+                <p className="text-xs text-danger">{formState.errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                {...register('password')}
+              />
+              {formState.errors.password && (
+                <p className="text-xs text-danger">{formState.errors.password.message}</p>
+              )}
+            </div>
+            <Button type="submit" className="w-full" size="lg" disabled={formState.isSubmitting}>
+              {formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+            </Button>
+            <p className="text-sm text-center text-muted pt-2">
+              Não tem conta ainda?{' '}
+              <Link href="/registrar" className="text-primary hover:underline font-semibold">
+                Criar conta
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </main>
   );

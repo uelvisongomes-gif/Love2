@@ -1,13 +1,28 @@
 import Link from 'next/link';
+import { RingsLogo } from './rings-logo';
+import { ThemeToggle } from './theme-toggle';
 import { LogoutButton } from './logout-button';
 
-export function AppHeader() {
+interface Props {
+  variant?: 'app' | 'public';
+}
+
+export function AppHeader({ variant = 'app' }: Props) {
   return (
-    <header className="w-full px-6 py-3 flex justify-between items-center border-b bg-background">
-      <Link href="/home" className="text-lg font-semibold tracking-tight">
-        LOVE Casal
-      </Link>
-      <LogoutButton />
+    <header className="w-full border-b border-rule bg-bg">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link
+          href={variant === 'app' ? '/home' : '/'}
+          className="flex items-center gap-2.5 font-display text-lg text-heading tracking-tight hover:opacity-80 transition-opacity"
+        >
+          <RingsLogo size={32} />
+          LOVE Casal
+        </Link>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          {variant === 'app' && <LogoutButton />}
+        </div>
+      </div>
     </header>
   );
 }
