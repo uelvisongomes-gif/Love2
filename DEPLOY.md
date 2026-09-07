@@ -30,11 +30,11 @@ Se você ainda não tem os repos no GitHub, cria dois:
 
 ```bash
 cd C:\Users\Uelvison\Desktop\love-casal-web
-git remote add origin https://github.com/SEU-USUARIO/love2-web.git
+git remote add origin https://github.com/uelvisongomes-gif/love2-web.git
 git push -u origin main
 
 cd C:\Users\Uelvison\Desktop\LOVEMEDIADOR
-git remote add origin https://github.com/SEU-USUARIO/love2-api.git
+git remote add origin https://github.com/uelvisongomes-gif/love2-api.git
 git branch -M main
 git push -u origin main
 ```
