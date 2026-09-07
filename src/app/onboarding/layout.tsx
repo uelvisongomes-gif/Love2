@@ -10,7 +10,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/home" className="flex items-center gap-2.5 font-display text-lg text-heading">
             <RingsLogo size={32} />
-            LOVE Casal
+            love2
           </Link>
           <div className="flex items-center gap-3">
             <Link

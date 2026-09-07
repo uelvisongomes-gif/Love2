@@ -16,7 +16,7 @@ export function AppHeader({ variant = 'app' }: Props) {
           className="flex items-center gap-2.5 font-display text-lg text-heading tracking-tight hover:opacity-80 transition-opacity"
         >
           <RingsLogo size={32} />
-          LOVE Casal
+          love2
         </Link>
         <div className="flex items-center gap-1">
           <ThemeToggle />

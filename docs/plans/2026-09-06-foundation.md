@@ -1,8 +1,8 @@
-# LOVE Casal Web — Foundation Plan
+# love2 Web — Foundation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bootstrap the LOVE Casal web app (Next.js 15 + TypeScript + Tailwind + shadcn/ui + React Query). Ship landing page, register, login, logout, protected-route middleware, and a placeholder `/home` page — the base every future feature plugs into.
+**Goal:** Bootstrap the love2 web app (Next.js 15 + TypeScript + Tailwind + shadcn/ui + React Query). Ship landing page, register, login, logout, protected-route middleware, and a placeholder `/home` page — the base every future feature plugs into.
 
 **Architecture:** Next.js App Router. All API traffic goes through `src/lib/api-client.ts` (a thin `fetch` wrapper that adds the JWT bearer token from an httpOnly cookie). Server-side data reads happen in Server Components / Route Handlers when possible; client mutations go through React Query. Auth tokens live in httpOnly cookies set by Next.js Route Handlers (`/api/auth/login`, `/api/auth/logout`) that proxy to the backend and translate its JSON response into cookies — the browser never sees the raw token. A single `middleware.ts` at the repo root redirects unauthenticated users away from protected paths.
 
@@ -118,7 +118,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'LOVE Casal',
+  title: 'love2',
   description: 'Mediadora do casamento — comunicação, conexão, cuidado.',
 };
 
@@ -166,7 +166,7 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen flex flex-col">
       <header className="w-full px-6 py-4 flex justify-between items-center border-b">
-        <h1 className="text-xl font-semibold tracking-tight">LOVE Casal</h1>
+        <h1 className="text-xl font-semibold tracking-tight">love2</h1>
         <div className="flex gap-2">
           <Button asChild variant="ghost">
             <Link href="/entrar">Entrar</Link>
@@ -201,7 +201,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t px-6 py-4 text-center text-sm text-muted-foreground">
-        LOVE Casal © 2026
+        love2 © 2026
       </footer>
     </main>
   );
@@ -221,9 +221,9 @@ Copy to `.env.local`. Verify `.gitignore` (created by Next.js) already excludes 
 
 `README.md`:
 ```md
-# LOVE Casal — Web
+# love2 — Web
 
-Next.js frontend for the LOVE Casal backend.
+Next.js frontend for the love2 backend.
 
 ## Development
 
@@ -784,7 +784,7 @@ export function AppHeader() {
   return (
     <header className="w-full px-6 py-3 flex justify-between items-center border-b bg-background">
       <Link href="/home" className="text-lg font-semibold tracking-tight">
-        LOVE Casal
+        love2
       </Link>
       <LogoutButton />
     </header>

@@ -1,6 +1,6 @@
-# LOVE Casal — Web
+# love2 — Web
 
-Next.js 15 frontend for the LOVE Casal backend.
+Next.js 15 frontend for the love2 backend.
 
 ## Development
 

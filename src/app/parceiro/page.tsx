@@ -74,7 +74,7 @@ function ConnectedState({ partnerName }: { partnerName: string }) {
         <h2 className="font-display italic text-2xl">Vocês estão vinculados</h2>
       </div>
       <p className="text-text font-medium">
-        Seu par no LOVE Casal é <strong className="text-heading">{partnerName}</strong>. A ponte está ativa — você pode abrir um conflito e a LOVE cuida do resto.
+        Seu par no love2 é <strong className="text-heading">{partnerName}</strong>. A ponte está ativa — você pode abrir um conflito e a LOVE cuida do resto.
       </p>
       <div className="pt-2">
         <Link href="/home" className="text-primary hover:underline text-sm font-semibold">

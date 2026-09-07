@@ -14,7 +14,7 @@ export default function LandingPage() {
             className="flex items-center gap-2.5 font-display text-lg text-heading tracking-tight"
           >
             <RingsLogo size={32} />
-            LOVE Casal
+            love2
           </Link>
           <nav className="flex items-center gap-1">
             <ThemeToggle />
@@ -68,7 +68,7 @@ export default function LandingPage() {
             {' '}·{' '}
             <strong className="text-heading font-semibold">CVV 188</strong> — 24h.
           </div>
-          <div>LOVE Casal © 2026</div>
+          <div>love2 © 2026</div>
         </div>
       </footer>
     </main>

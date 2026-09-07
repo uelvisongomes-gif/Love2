@@ -3,7 +3,7 @@ interface Props {
   className?: string;
 }
 
-/** Two interlocked wedding rings — the LOVE Casal mark.
+/** Two interlocked wedding rings — the love2 mark.
  *  Colors come from CSS tokens so it adapts to light/dark automatically. */
 export function RingsLogo({ size = 34, className }: Props) {
   const height = Math.round((size * 20) / 34);
