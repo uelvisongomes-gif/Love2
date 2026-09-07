@@ -8,9 +8,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-primary text-primary-foreground hover:bg-primary/90 rounded-full',
+          'bg-primary text-[hsl(var(--primary-fg))] hover:bg-primary/90 rounded-full',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full',
+          'bg-secondary text-[hsl(var(--secondary-fg))] hover:bg-secondary/90 rounded-full',
         ghost:
           'bg-transparent text-heading border border-secondary hover:bg-surface rounded-full',
         soft:

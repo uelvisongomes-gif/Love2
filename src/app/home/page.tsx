@@ -8,7 +8,7 @@ export default function HomePage() {
         <h1 className="font-display text-4xl md:text-5xl text-heading tracking-tight">
           Bem-vinda(o).
         </h1>
-        <p className="mt-3 text-muted max-w-[52ch]">
+        <p className="mt-3 text-text font-medium max-w-[52ch]">
           Em breve, aqui aparecem seu check-in de hoje, últimas conversas com a LOVE e o índice de saúde do casal.
         </p>
       </div>
@@ -22,7 +22,7 @@ export default function HomePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted">Em construção — próximo plano.</p>
+            <p className="text-sm font-semibold text-muted">Em construção — próximo plano.</p>
           </CardContent>
         </Card>
 

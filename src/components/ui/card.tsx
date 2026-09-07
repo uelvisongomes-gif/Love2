@@ -23,7 +23,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTM
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('font-display text-2xl tracking-tight', className)}
+      className={cn('font-display text-2xl italic tracking-tight text-primary', className)}
       {...props}
     />
   ),
@@ -34,7 +34,7 @@ export const CardDescription = forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-sm text-muted', className)} {...props} />
+  <p ref={ref} className={cn('text-sm font-medium text-text leading-relaxed', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 
