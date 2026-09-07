@@ -32,13 +32,13 @@ export default function LandingPage() {
       </header>
 
       <section className="flex-1 flex items-center">
-        <div className="max-w-6xl mx-auto px-6 py-20 w-full">
+        <div className="max-w-6xl mx-auto px-6 py-8 md:py-12 w-full">
           <div className="max-w-3xl">
-            <p className="type-eyebrow mb-5">— uma mediadora, não uma terapeuta</p>
-            <h1 className="type-display text-[clamp(2.5rem,6vw,4.5rem)] mb-6">
+            <p className="type-eyebrow mb-3">— uma mediadora, não uma terapeuta</p>
+            <h1 className="type-display text-[clamp(2rem,4.5vw,3.5rem)] mb-4">
               Uma conversa <em>diferente</em>, sobre a mesma coisa de sempre.
             </h1>
-            <p className="text-[1.05rem] leading-relaxed text-text max-w-[46ch] mb-8">
+            <p className="text-[1rem] leading-relaxed text-text max-w-[46ch] mb-5">
               O LOVE ouve cada um de vocês em separado, devolve os pontos em Comunicação Não-Violenta, e só faz a ponte com o outro quando você aprova cada trecho.{' '}
               <strong className="text-heading font-semibold">Nada é compartilhado sem o seu ok.</strong>
             </p>
