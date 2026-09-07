@@ -21,6 +21,23 @@ export const loginInput = z.object({
 });
 export type LoginInput = z.infer<typeof loginInput>;
 
+export const requestPasswordResetInput = z.object({
+  email: z.string().email('e-mail inválido').toLowerCase(),
+});
+export type RequestPasswordResetInput = z.infer<typeof requestPasswordResetInput>;
+
+export const confirmPasswordResetInput = z.object({
+  email: z.string().email('e-mail inválido').toLowerCase(),
+  code: z.string().regex(/^\d{6}$/, 'código precisa ter 6 dígitos'),
+  newPassword: z
+    .string()
+    .min(6, 'senha precisa ter ao menos 6 caracteres')
+    .regex(/[A-Z]/, 'inclua uma letra maiúscula')
+    .regex(/[a-z]/, 'inclua uma letra minúscula')
+    .regex(/\d/, 'inclua um número'),
+});
+export type ConfirmPasswordResetInput = z.infer<typeof confirmPasswordResetInput>;
+
 // ============ Onboarding ============
 import { LOVE_LANGUAGES, PILLARS } from './love-languages';
 

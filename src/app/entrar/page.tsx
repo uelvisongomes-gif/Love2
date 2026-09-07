@@ -77,6 +77,11 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" size="lg" disabled={formState.isSubmitting}>
               {formState.isSubmitting ? 'Entrando...' : 'Entrar'}
             </Button>
+            <p className="text-sm text-center pt-1">
+              <Link href="/esqueci" className="text-muted hover:text-primary hover:underline">
+                Esqueci minha senha
+              </Link>
+            </p>
             <p className="text-sm text-center text-muted pt-2">
               Não tem conta ainda?{' '}
               <Link href="/registrar" className="text-primary hover:underline font-semibold">
