@@ -25,11 +25,31 @@ interface ChatResponse {
   messageId: string;
 }
 
-const CONTEXTS: { value: Context; label: string; description: string }[] = [
-  { value: 'general', label: 'Conversar', description: 'Um bate-papo pra pensar em voz alta.' },
-  { value: 'conflict', label: 'Tem conflito', description: 'Vocês brigaram ou estão prestes a.' },
-  { value: 'check-in', label: 'Check-in', description: 'Como foi seu dia com ele/ela hoje?' },
-  { value: 'journal', label: 'Só desabafar', description: 'Isso fica só entre você e a LOVE.' },
+const CONTEXTS: { value: Context; label: string; description: string; intro: string }[] = [
+  {
+    value: 'general',
+    label: 'Conversar',
+    description: 'Um bate-papo pra pensar em voz alta.',
+    intro: 'Fala do que quiser. Vou tentar te ajudar a pensar sobre isso, sem correr pra dar solução.',
+  },
+  {
+    value: 'conflict',
+    label: 'Tem conflito',
+    description: 'Vocês brigaram ou estão prestes a.',
+    intro: 'Vamos passar por etapas: 1) o que aconteceu, 2) o que você sentiu, 3) o que precisava, 4) como imagina que ele/ela viu, 5) um acordo prático.',
+  },
+  {
+    value: 'check-in',
+    label: 'Check-in',
+    description: 'Como foi seu dia com ele/ela hoje?',
+    intro: 'Rapidinho, uma coisa por vez: como tá a conexão, comunicação, carinho, divisão de tarefas e seu emocional hoje?',
+  },
+  {
+    value: 'journal',
+    label: 'Só desabafar',
+    description: 'Isso fica só entre você e a LOVE.',
+    intro: 'Sem conselho por enquanto. Fala o que tá pesando — eu escuto.',
+  },
 ];
 
 export default function ChatPage() {
@@ -124,7 +144,7 @@ export default function ChatPage() {
 
       <div className="flex-1 flex flex-col max-w-3xl w-full mx-auto px-4 md:px-6">
         {/* context switcher */}
-        <div className="pt-6 pb-4 flex flex-wrap gap-2">
+        <div className="pt-6 pb-2 flex flex-wrap gap-2">
           {CONTEXTS.map((c) => (
             <button
               key={c.value}
@@ -141,10 +161,15 @@ export default function ChatPage() {
             </button>
           ))}
         </div>
+        {!empty && (
+          <p className="text-[11px] text-muted font-medium mb-2">
+            Modo <span className="text-primary font-semibold">{CONTEXTS.find((c) => c.value === context)!.label}</span> ativo
+          </p>
+        )}
 
         {/* messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto py-4 space-y-6">
-          {empty && <EmptyState contextDescription={CONTEXTS.find((c) => c.value === context)!.description} />}
+          {empty && <EmptyState contextData={CONTEXTS.find((c) => c.value === context)!} />}
           {messages.map((m) => (
             <ChatMessage key={m.id} role={m.role} content={m.content} citations={m.citations} />
           ))}
@@ -198,16 +223,20 @@ export default function ChatPage() {
   );
 }
 
-function EmptyState({ contextDescription }: { contextDescription: string }) {
+function EmptyState({
+  contextData,
+}: {
+  contextData: { label: string; description: string; intro: string };
+}): React.ReactElement {
   return (
-    <div className="py-16 text-center max-w-md mx-auto space-y-4">
-      <p className="type-eyebrow">— pronta pra ouvir</p>
+    <div className="py-10 text-center max-w-md mx-auto space-y-4">
+      <p className="type-eyebrow">— modo {contextData.label.toLowerCase()}</p>
       <h2 className="font-display text-3xl text-heading tracking-tight">
-        Me conta o que <em className="text-primary italic">aconteceu</em>.
+        {contextData.description}
       </h2>
-      <p className="text-text font-medium">{contextDescription}</p>
-      <p className="text-xs text-muted font-medium pt-4 max-w-sm mx-auto">
-        Sou a LOVE — mediadora, não psicóloga nem terapeuta. Não julgo, não decido por vocês. Quando cito dados, mostro a fonte.
+      <p className="text-text font-medium leading-relaxed">{contextData.intro}</p>
+      <p className="text-xs text-muted font-medium pt-2 max-w-sm mx-auto">
+        Sou a LOVE — mediadora, não psicóloga nem terapeuta.
       </p>
     </div>
   );
