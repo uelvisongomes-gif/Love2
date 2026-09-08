@@ -1,10 +1,13 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { Mic, MicOff, MessageCircle, Radio } from 'lucide-react';
+import { speakText, stopSpeaking } from '@/lib/speech';
 
 /**
  * Web Speech API — funciona no Chrome/Edge/Safari sem chave de API.
- * SpeechRecognition (STT) e speechSynthesis (TTS).
+ * Suporta 2 modos:
+ * - Push-to-talk (default): clica pra falar, para quando você para
+ * - Modo diálogo (continuous): fala, LOVE responde por voz, mic auto-restart pro próximo turno
  */
 
 interface SpeechRecognitionAlternative {
@@ -53,22 +56,43 @@ function getSpeechRecognition(): SpeechRecognitionConstructor | null {
 interface VoiceChatProps {
   onTranscript: (text: string) => void;
   isSending: boolean;
-  ttsText?: string | null; // texto que a LOVE deve falar quando chegar
-  autoSpeak: boolean;
-  onToggleAutoSpeak: () => void;
+  ttsText?: string | null;
+  dialogueMode: boolean;
+  onToggleDialogueMode: () => void;
 }
 
 export function VoiceChat({
   onTranscript,
   isSending,
   ttsText,
-  autoSpeak,
-  onToggleAutoSpeak,
+  dialogueMode,
+  onToggleDialogueMode,
 }: VoiceChatProps): React.ReactElement | null {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const lastSpokenRef = useRef<string | null>(null);
+  const dialogueModeRef = useRef(dialogueMode);
+  const isSendingRef = useRef(isSending);
+  useEffect(() => {
+    dialogueModeRef.current = dialogueMode;
+  }, [dialogueMode]);
+  useEffect(() => {
+    isSendingRef.current = isSending;
+  }, [isSending]);
+
+  const startListening = useCallback((): void => {
+    const rec = recognitionRef.current;
+    if (!rec) return;
+    if (isSendingRef.current) return;
+    try {
+      stopSpeaking();
+      rec.start();
+      setListening(true);
+    } catch {
+      /* já rodando */
+    }
+  }, []);
 
   useEffect(() => {
     const SR = getSpeechRecognition();
@@ -98,65 +122,56 @@ export function VoiceChat({
       rec.abort();
       recognitionRef.current = null;
     };
-    // onTranscript stable via useCallback in parent
   }, [onTranscript]);
 
-  const toggleListen = useCallback((): void => {
+  const stopListening = useCallback((): void => {
     const rec = recognitionRef.current;
     if (!rec) return;
-    if (listening) {
-      rec.stop();
-    } else {
-      try {
-        // interrompe TTS se estiver falando
-        if (typeof window !== 'undefined') window.speechSynthesis.cancel();
-        rec.start();
-        setListening(true);
-      } catch {
-        setListening(false);
-      }
-    }
-  }, [listening]);
+    rec.stop();
+  }, []);
 
-  // Toca TTS quando ttsText chega novo (e autoSpeak ligado)
+  const toggleListen = useCallback((): void => {
+    if (listening) stopListening();
+    else startListening();
+  }, [listening, startListening, stopListening]);
+
+  // TTS: quando ttsText muda e estamos em modo diálogo (ou explicitamente falando), a LOVE fala.
+  // No fim da fala, se estamos em modo diálogo, o mic reinicia sozinho.
   useEffect(() => {
-    if (!autoSpeak) return;
     if (!ttsText) return;
     if (ttsText === lastSpokenRef.current) return;
-    if (typeof window === 'undefined') return;
+    if (!dialogueModeRef.current) return; // só fala automaticamente se dialogueMode
     lastSpokenRef.current = ttsText;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    // remove markdown básico pra não falar asteriscos
-    const clean = ttsText
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
-      .replace(/[*_`#>]/g, '');
-    const utter = new SpeechSynthesisUtterance(clean);
-    utter.lang = 'pt-BR';
-    utter.rate = 1;
-    utter.pitch = 1;
-    // Escolhe voz feminina em pt-BR se disponível
-    const voices = synth.getVoices();
-    const ptVoice = voices.find(
-      (v) => v.lang.startsWith('pt') && /female|feminina|Luciana|Camila|Vitoria|Fernanda|Maria/i.test(v.name),
-    ) ?? voices.find((v) => v.lang.startsWith('pt'));
-    if (ptVoice) utter.voice = ptVoice;
-    synth.speak(utter);
-  }, [ttsText, autoSpeak]);
+    speakText(ttsText, {
+      onEnd: () => {
+        if (dialogueModeRef.current && !isSendingRef.current) {
+          startListening();
+        }
+      },
+    });
+  }, [ttsText, startListening]);
 
-  // Pré-carrega vozes (Chrome async)
+  // Pré-carrega vozes
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const synth = window.speechSynthesis;
     if (synth.getVoices().length === 0) {
-      const handler = (): void => {
-        /* just triggers cache */
-      };
+      const handler = (): void => {};
       synth.addEventListener('voiceschanged', handler);
       return () => synth.removeEventListener('voiceschanged', handler);
     }
   }, []);
+
+  // Se ligar dialogueMode, começa a ouvir de cara
+  useEffect(() => {
+    if (dialogueMode && !listening && !isSending) {
+      startListening();
+    }
+    if (!dialogueMode) {
+      stopSpeaking();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dialogueMode]);
 
   if (!supported) return null;
 
@@ -166,8 +181,8 @@ export function VoiceChat({
         type="button"
         onClick={toggleListen}
         disabled={isSending}
-        aria-label={listening ? 'Parar de gravar' : 'Falar com a LOVE'}
-        title={listening ? 'Parar de gravar' : 'Falar com a LOVE'}
+        aria-label={listening ? 'Parar de gravar' : 'Falar'}
+        title={listening ? 'Parar de gravar' : 'Falar'}
         className={`h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-colors border ${
           listening
             ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary animate-pulse'
@@ -178,16 +193,20 @@ export function VoiceChat({
       </button>
       <button
         type="button"
-        onClick={onToggleAutoSpeak}
-        aria-label={autoSpeak ? 'Silenciar respostas' : 'LOVE responde por voz'}
-        title={autoSpeak ? 'Silenciar respostas' : 'LOVE responde por voz'}
+        onClick={onToggleDialogueMode}
+        aria-label={dialogueMode ? 'Sair do modo diálogo' : 'Entrar no modo diálogo por voz'}
+        title={
+          dialogueMode
+            ? 'Modo diálogo ligado — desliga pra voltar a digitar'
+            : 'Modo diálogo por voz — fala e a LOVE responde por voz continuamente'
+        }
         className={`h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-colors border ${
-          autoSpeak
-            ? 'bg-primary/10 text-primary border-primary/50'
-            : 'bg-bg text-muted border-rule hover:text-primary'
+          dialogueMode
+            ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+            : 'bg-bg text-muted border-rule hover:text-primary hover:border-primary/50'
         }`}
       >
-        {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+        {dialogueMode ? <Radio className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
       </button>
     </div>
   );

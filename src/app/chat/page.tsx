@@ -38,7 +38,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [context, setContext] = useState<Context>('general');
   const [sending, setSending] = useState(false);
-  const [autoSpeak, setAutoSpeak] = useState(false);
+  const [dialogueMode, setDialogueMode] = useState(false);
   const [lastAssistantSpeech, setLastAssistantSpeech] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -172,8 +172,8 @@ export default function ChatPage() {
               onTranscript={onVoiceTranscript}
               isSending={sending}
               ttsText={lastAssistantSpeech}
-              autoSpeak={autoSpeak}
-              onToggleAutoSpeak={() => setAutoSpeak((v) => !v)}
+              dialogueMode={dialogueMode}
+              onToggleDialogueMode={() => setDialogueMode((v) => !v)}
             />
             <button
               type="submit"
@@ -185,7 +185,11 @@ export default function ChatPage() {
             </button>
           </div>
           <div className="mt-2 flex justify-between text-[11px] text-muted font-medium">
-            <span>Enter, microfone pra falar · alto-falante pra ouvir a LOVE</span>
+            <span>
+              {dialogueMode
+                ? '📻 Modo diálogo — fala e a LOVE responde por voz'
+                : '🎤 pra falar · 📻 pra modo diálogo por voz contínuo'}
+            </span>
             <Link href="/home" className="hover:text-heading">← Início</Link>
           </div>
         </form>

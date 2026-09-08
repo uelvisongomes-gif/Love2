@@ -1,4 +1,8 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { Play, Square } from 'lucide-react';
 import { RingsAvatar } from './rings-avatar';
+import { speakText, stopSpeaking } from '@/lib/speech';
 
 interface Citation {
   title: string;
@@ -11,8 +15,7 @@ interface Props {
   citations?: Citation[];
 }
 
-/** Renders assistant content preserving paragraph breaks and simple emphasis. */
-function AssistantMarkdown({ text }: { text: string }) {
+function AssistantMarkdown({ text }: { text: string }): React.ReactElement {
   const paragraphs = text.split(/\n{2,}/);
   return (
     <div className="space-y-3">
@@ -26,7 +29,6 @@ function AssistantMarkdown({ text }: { text: string }) {
 }
 
 function renderInline(text: string): React.ReactNode {
-  // Convert **bold** to <strong> and [text](url) to <a>
   const parts: React.ReactNode[] = [];
   const regex = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)]+)\)/g;
   let lastIdx = 0;
@@ -59,7 +61,57 @@ function renderInline(text: string): React.ReactNode {
   return parts.length ? parts : text;
 }
 
-export function ChatMessage({ role, content, citations }: Props) {
+function PlayButton({ text }: { text: string }): React.ReactElement | null {
+  const [playing, setPlaying] = useState(false);
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      setSupported(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (playing) stopSpeaking();
+    };
+    // only cleanup on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!supported) return null;
+
+  const toggle = (): void => {
+    if (playing) {
+      stopSpeaking();
+      setPlaying(false);
+    } else {
+      speakText(text, {
+        onStart: () => setPlaying(true),
+        onEnd: () => setPlaying(false),
+      });
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={playing ? 'Parar áudio' : 'Ouvir mensagem'}
+      title={playing ? 'Parar áudio' : 'Ouvir mensagem'}
+      className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-semibold border transition-colors ${
+        playing
+          ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+          : 'bg-bg text-primary border-primary/40 hover:bg-primary/10'
+      }`}
+    >
+      {playing ? <Square className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+      <span>{playing ? 'Parar' : 'Ouvir'}</span>
+    </button>
+  );
+}
+
+export function ChatMessage({ role, content, citations }: Props): React.ReactElement {
   if (role === 'user') {
     return (
       <div className="flex justify-end">
@@ -77,11 +129,16 @@ export function ChatMessage({ role, content, citations }: Props) {
         <div className="font-display italic text-primary text-sm mb-1.5">LOVE</div>
         <div className="rounded-2xl rounded-tl-md bg-surface border border-rule px-4 py-3">
           <AssistantMarkdown text={content} />
-          {citations && citations.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-rule space-y-1">
+          <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
+            <PlayButton text={content} />
+            {citations && citations.length > 0 && (
               <div className="text-[10px] uppercase tracking-wider text-muted font-semibold">
-                Fontes citadas
+                {citations.length} {citations.length === 1 ? 'fonte' : 'fontes'}
               </div>
+            )}
+          </div>
+          {citations && citations.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-rule space-y-1">
               <ul className="text-xs text-muted font-medium space-y-0.5">
                 {citations.map((c) => (
                   <li key={c.url}>
@@ -104,7 +161,7 @@ export function ChatMessage({ role, content, citations }: Props) {
   );
 }
 
-export function TypingIndicator() {
+export function TypingIndicator(): React.ReactElement {
   return (
     <div className="flex gap-3 items-start">
       <RingsAvatar size={36} />
