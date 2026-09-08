@@ -9,13 +9,13 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-bg">
       <AppHeader />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12">
-        <div className="mb-12">
-          <p className="type-eyebrow mb-3">— seu início</p>
-          <h1 className="font-display text-4xl md:text-5xl text-heading tracking-tight">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-6 md:py-8">
+        <div className="mb-6">
+          <p className="type-eyebrow mb-2">— seu início</p>
+          <h1 className="font-display text-3xl md:text-4xl text-heading tracking-tight">
             Bem-vinda(o).
           </h1>
-          <p className="mt-4 text-text font-medium max-w-[52ch] leading-relaxed">
+          <p className="mt-2 text-sm text-text font-medium max-w-[52ch] leading-relaxed">
             Comece falando com a LOVE — ela ouve, organiza e ajuda a encontrar as próximas palavras. Depois, quando quiser, convide seu parceiro pra vincular vocês.
           </p>
         </div>
@@ -23,30 +23,30 @@ export default function HomePage() {
         {/* Primary CTA */}
         <Link
           href="/chat"
-          className="block group rounded-lg border border-rule bg-surface hover:bg-bg hover:border-primary/50 shadow-soft p-6 md:p-8 mb-6 transition-colors"
+          className="block group rounded-lg border border-rule bg-surface hover:bg-bg hover:border-primary/50 shadow-soft p-4 md:p-5 mb-4 transition-colors"
         >
-          <div className="flex items-start gap-4">
-            <div className="rounded-full bg-primary/10 p-3 shrink-0">
-              <MessageCircleHeart className="w-6 h-6 text-primary" />
+          <div className="flex items-start gap-3">
+            <div className="rounded-full bg-primary/10 p-2.5 shrink-0">
+              <MessageCircleHeart className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-display italic text-primary text-2xl tracking-tight">Falar com a LOVE</h2>
-              <p className="text-sm text-text font-medium mt-1 leading-relaxed">
+              <h2 className="font-display italic text-primary text-xl tracking-tight">Falar com a LOVE</h2>
+              <p className="text-sm text-text font-medium mt-0.5 leading-relaxed">
                 Conta pra ela como você está. Sem julgamento, sem receita pronta — só escuta e caminhos.
               </p>
             </div>
-            <div className="hidden sm:block text-primary font-semibold text-2xl group-hover:translate-x-1 transition-transform">→</div>
+            <div className="hidden sm:block text-primary font-semibold text-xl group-hover:translate-x-1 transition-transform">→</div>
           </div>
         </Link>
 
         {/* Secondary CTAs */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <SecondaryCard href="/parceiro" icon={<UserPlus className="w-5 h-5" />} title="Convidar parceiro" description="Vincule vocês pra ativar a ponte." />
           <SecondaryCard href="/checkin" icon={<Sprout className="w-5 h-5" />} title="Check-in do dia" description="1 minuto: como foi hoje?" comingSoon />
           <SecondaryCard href="/journal" icon={<BookHeart className="w-5 h-5" />} title="Só pra você" description="Diário privado, ninguém vê." comingSoon />
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-6 text-center">
           <Link
             href="/onboarding"
             className={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'text-muted hover:text-primary')}
@@ -69,11 +69,11 @@ interface SecondaryProps {
 
 function SecondaryCard({ href, icon, title, description, comingSoon }: SecondaryProps) {
   const inner = (
-    <div className="rounded-lg border border-rule bg-bg p-5 h-full flex flex-col hover:border-primary/40 transition-colors">
-      <div className="flex items-center gap-2 text-primary mb-2">{icon}<span className="font-display italic text-lg tracking-tight">{title}</span></div>
+    <div className="rounded-lg border border-rule bg-bg p-4 h-full flex flex-col hover:border-primary/40 transition-colors">
+      <div className="flex items-center gap-2 text-primary mb-1.5">{icon}<span className="font-display italic text-base tracking-tight">{title}</span></div>
       <p className="text-sm text-text font-medium leading-relaxed flex-1">{description}</p>
       {comingSoon && (
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-muted mt-3">Em breve</p>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-muted mt-2">Em breve</p>
       )}
     </div>
   );
