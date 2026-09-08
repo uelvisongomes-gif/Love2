@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Send } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { ChatMessage, TypingIndicator } from '@/components/chat-message';
+import { VoiceChat } from '@/components/voice-chat';
 import { apiClient } from '@/lib/api-client';
 
 interface Message {
@@ -37,6 +38,8 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [context, setContext] = useState<Context>('general');
   const [sending, setSending] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(false);
+  const [lastAssistantSpeech, setLastAssistantSpeech] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -48,53 +51,62 @@ export default function ChatPage() {
     textareaRef.current?.focus();
   }, []);
 
-  async function onSend(e: FormEvent) {
+  const sendContent = useCallback(
+    async (content: string): Promise<void> => {
+      if (!content || sending) return;
+
+      const userMsg: Message = { id: `u-${Date.now()}`, role: 'user', content };
+      setMessages((prev) => [...prev, userMsg]);
+      setInput('');
+      setSending(true);
+
+      try {
+        const res = await apiClient<ChatResponse>('/api/love/chat', {
+          method: 'POST',
+          body: JSON.stringify({ content, context }),
+        });
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: res.messageId,
+            role: 'assistant',
+            content: res.reply,
+            citations: res.citations,
+          },
+        ]);
+        setLastAssistantSpeech(res.reply);
+      } catch (err) {
+        const e = err as { code?: string; message?: string };
+        if (e.code === 'CONSENT_REQUIRED') {
+          toast.error('Você precisa completar o onboarding pra conversar com a LOVE.');
+          router.push('/onboarding');
+          return;
+        }
+        if (e.code === 'NO_COUPLE') {
+          toast.error('Vincule um parceiro pra abrir conversa.');
+        } else {
+          toast.error(e.message || 'A LOVE não conseguiu responder agora.');
+        }
+        setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
+        setInput(content);
+      } finally {
+        setSending(false);
+      }
+    },
+    [context, router, sending],
+  );
+
+  async function onSend(e: FormEvent): Promise<void> {
     e.preventDefault();
-    const content = input.trim();
-    if (!content || sending) return;
-
-    const userMsg: Message = {
-      id: `u-${Date.now()}`,
-      role: 'user',
-      content,
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setSending(true);
-
-    try {
-      const res = await apiClient<ChatResponse>('/api/love/chat', {
-        method: 'POST',
-        body: JSON.stringify({ content, context }),
-      });
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: res.messageId,
-          role: 'assistant',
-          content: res.reply,
-          citations: res.citations,
-        },
-      ]);
-    } catch (err) {
-      const e = err as { code?: string; message?: string };
-      if (e.code === 'CONSENT_REQUIRED') {
-        toast.error('Você precisa completar o onboarding pra conversar com a LOVE.');
-        router.push('/onboarding');
-        return;
-      }
-      if (e.code === 'NO_COUPLE') {
-        toast.error('Vincule um parceiro pra abrir conversa.');
-      } else {
-        toast.error(e.message || 'A LOVE não conseguiu responder agora.');
-      }
-      // rollback the user message so they can edit and resend
-      setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
-      setInput(content);
-    } finally {
-      setSending(false);
-    }
+    await sendContent(input.trim());
   }
+
+  const onVoiceTranscript = useCallback(
+    (text: string): void => {
+      void sendContent(text);
+    },
+    [sendContent],
+  );
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -150,11 +162,18 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Conta o que aconteceu..."
+              placeholder="Conta o que aconteceu ou clica no microfone..."
               rows={2}
               disabled={sending}
               className="flex-1 resize-none rounded-2xl border border-rule bg-bg px-4 py-3 text-[15px] leading-relaxed text-text placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg font-medium max-h-40"
               maxLength={4000}
+            />
+            <VoiceChat
+              onTranscript={onVoiceTranscript}
+              isSending={sending}
+              ttsText={lastAssistantSpeech}
+              autoSpeak={autoSpeak}
+              onToggleAutoSpeak={() => setAutoSpeak((v) => !v)}
             />
             <button
               type="submit"
@@ -166,7 +185,7 @@ export default function ChatPage() {
             </button>
           </div>
           <div className="mt-2 flex justify-between text-[11px] text-muted font-medium">
-            <span>Enter pra enviar · Shift+Enter pra nova linha</span>
+            <span>Enter, microfone pra falar · alto-falante pra ouvir a LOVE</span>
             <Link href="/home" className="hover:text-heading">← Início</Link>
           </div>
         </form>
