@@ -55,6 +55,6 @@ export const PILLAR_META: Record<Pillar, { label: string; description: string }>
   intimidade: { label: 'Vida íntima', description: 'Sexo, afeto, desejo, cuidado.' },
   filhos: { label: 'Filhos', description: 'Criação, cuidado, decisões parentais.' },
   tarefas: { label: 'Divisão de tarefas', description: 'Casa, rotina, carga mental.' },
-  papeis: { label: 'Papéis', description: 'Quem faz o quê no relacionamento.' },
+  papeis: { label: 'Papéis', description: 'Alinhamento sobre o que cabe a cada um.' },
   espiritualidade: { label: 'Espiritualidade', description: 'Fé, valores, significado.' },
 };
