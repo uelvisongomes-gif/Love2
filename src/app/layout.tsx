@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   title: 'love2',
   description:
     'Uma mediadora pra conversar melhor com quem você ama. Não é psicóloga, não é terapeuta — é escuta e caminho.',
+  manifest: '/manifest.json',
+  themeColor: '#c9694a',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'love2',
+  },
 };
 
 // Set the theme on <html> BEFORE React hydrates to avoid a flash of wrong theme.

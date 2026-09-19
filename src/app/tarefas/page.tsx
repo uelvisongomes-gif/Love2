@@ -2,13 +2,23 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Home, Baby, Wallet, HeartHandshake, Target, Plus } from 'lucide-react';
+import { Home, Baby, Wallet, HeartHandshake, Target, Plus, Bell, BellOff } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { apiClient } from '@/lib/api-client';
+import {
+  getExistingSubscription,
+  isPushSupported,
+  registerServiceWorker,
+  serializeSubscription,
+  subscribePush,
+  unsubscribePush,
+} from '@/lib/push';
 
 type Category = 'casa' | 'filhos' | 'financas' | 'tempo_casal' | 'metas';
 type Scope = 'all' | 'mine' | 'partner';
 type Status = 'open' | 'done';
+
+type Recurrence = 'daily' | 'weekly' | 'monthly';
 
 interface Task {
   id: string;
@@ -20,6 +30,8 @@ interface Task {
   completedAt: string | null;
   pillar: string;
   createdBy: string;
+  recurrence: Recurrence | null;
+  remindAt: string | null;
 }
 
 const CATEGORY_META: Record<Category, { label: string; icon: React.ReactNode }> = {
@@ -47,6 +59,59 @@ export default function TarefasPage(): React.ReactElement {
   const [status, setStatus] = useState<Status>('open');
   const [category, setCategory] = useState<Category | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+
+  useEffect(() => {
+    if (!isPushSupported()) return;
+    void registerServiceWorker().then(() => getExistingSubscription()).then((sub) => {
+      setPushEnabled(!!sub);
+    });
+  }, []);
+
+  async function togglePush(): Promise<void> {
+    if (!isPushSupported()) {
+      toast.error('Seu navegador não suporta notificações.');
+      return;
+    }
+    setPushBusy(true);
+    try {
+      if (pushEnabled) {
+        const sub = await getExistingSubscription();
+        if (sub) {
+          await apiClient('/api/push/unsubscribe', {
+            method: 'POST',
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+        }
+        await unsubscribePush();
+        setPushEnabled(false);
+        toast.success('Notificações desativadas.');
+      } else {
+        const keyRes = await apiClient<{ publicKey: string | null }>('/api/push/public-key');
+        if (!keyRes.publicKey) {
+          toast.error('Push não configurado no servidor ainda.');
+          return;
+        }
+        const sub = await subscribePush(keyRes.publicKey);
+        if (!sub) {
+          toast.error('Permissão negada. Ative nas configurações do navegador.');
+          return;
+        }
+        const payload = { ...serializeSubscription(sub), userAgent: navigator.userAgent };
+        await apiClient('/api/push/subscribe', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        setPushEnabled(true);
+        toast.success('Notificações ativadas — você vai receber os lembretes.');
+      }
+    } catch (err) {
+      toast.error((err as Error).message || 'Erro.');
+    } finally {
+      setPushBusy(false);
+    }
+  }
 
   const load = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -112,13 +177,28 @@ export default function TarefasPage(): React.ReactElement {
             <h1 className="font-display text-3xl md:text-4xl text-heading tracking-tight">
               <em className="text-primary italic">Tarefas</em>
             </h1>
-            <button
-              type="button"
-              onClick={() => setShowCreate(true)}
-              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold bg-primary text-[hsl(var(--primary-fg))] hover:bg-primary/90"
-            >
-              <Plus className="w-4 h-4" /> Nova
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={togglePush}
+                disabled={pushBusy}
+                title={pushEnabled ? 'Notificações ativas' : 'Ativar notificações'}
+                className={`h-10 w-10 rounded-full flex items-center justify-center border transition-colors ${
+                  pushEnabled
+                    ? 'bg-primary/10 text-primary border-primary/40'
+                    : 'bg-bg text-muted border-rule hover:text-primary hover:border-primary/50'
+                } disabled:opacity-50`}
+              >
+                {pushEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreate(true)}
+                className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold bg-primary text-[hsl(var(--primary-fg))] hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4" /> Nova
+              </button>
+            </div>
           </div>
         </div>
 
@@ -222,6 +302,25 @@ export default function TarefasPage(): React.ReactElement {
                         })}
                       </span>
                     )}
+                    {t.remindAt && (
+                      <span>
+                        🔔{' '}
+                        {new Date(t.remindAt).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    )}
+                    {t.recurrence && (
+                      <span>
+                        🔁{' '}
+                        {t.recurrence === 'daily'
+                          ? 'diária'
+                          : t.recurrence === 'weekly'
+                            ? 'semanal'
+                            : 'mensal'}
+                      </span>
+                    )}
                     {!t.assignedTo ? (
                       <span>ambos</span>
                     ) : null}
@@ -295,12 +394,23 @@ function CreateTaskModal({
   const [category, setCategory] = useState<Category>('casa');
   const [assignTo, setAssignTo] = useState<'me' | 'partner' | 'both'>('both');
   const [dueBy, setDueBy] = useState('');
+  const [remindTime, setRemindTime] = useState('');
+  const [recurrence, setRecurrence] = useState<'nunca' | Recurrence>('nunca');
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(): Promise<void> {
     if (!title.trim()) return;
     setSubmitting(true);
     try {
+      let remindAt: string | undefined;
+      if (dueBy && remindTime) {
+        remindAt = new Date(`${dueBy}T${remindTime}`).toISOString();
+      } else if (remindTime && !dueBy) {
+        const today = new Date();
+        const [h, m] = remindTime.split(':').map(Number);
+        today.setHours(h ?? 0, m ?? 0, 0, 0);
+        remindAt = today.toISOString();
+      }
       await apiClient('/api/tasks', {
         method: 'POST',
         body: JSON.stringify({
@@ -310,6 +420,8 @@ function CreateTaskModal({
           pillar: PILLAR_FOR_CATEGORY[category],
           assignTo,
           dueBy: dueBy ? new Date(dueBy).toISOString() : undefined,
+          recurrence: recurrence === 'nunca' ? undefined : recurrence,
+          remindAt,
         }),
       });
       toast.success('Tarefa criada.');
@@ -378,12 +490,50 @@ function CreateTaskModal({
         </div>
 
         <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Prazo (opcional)</label>
-        <input
-          type="date"
-          value={dueBy}
-          onChange={(e) => setDueBy(e.target.value)}
-          className="w-full h-10 rounded-lg border border-rule bg-bg px-3 text-sm mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <input
+            type="date"
+            value={dueBy}
+            onChange={(e) => setDueBy(e.target.value)}
+            className="h-10 rounded-lg border border-rule bg-bg px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
+          <input
+            type="time"
+            value={remindTime}
+            onChange={(e) => setRemindTime(e.target.value)}
+            placeholder="Lembrete"
+            className="h-10 rounded-lg border border-rule bg-bg px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
+        </div>
+        {remindTime && (
+          <p className="text-[11px] text-muted -mt-2 mb-4">
+            🔔 Você vai receber notificação nesse horário (ativa as notificações no topo primeiro).
+          </p>
+        )}
+
+        <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Repetir</label>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(['nunca', 'daily', 'weekly', 'monthly'] as const).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRecurrence(r)}
+              className={`h-8 px-3 rounded-full text-[11px] font-semibold uppercase tracking-wider border ${
+                recurrence === r
+                  ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+                  : 'bg-bg text-text border-rule hover:bg-surface'
+              }`}
+            >
+              {r === 'nunca'
+                ? 'Não repete'
+                : r === 'daily'
+                  ? 'Todo dia'
+                  : r === 'weekly'
+                    ? 'Toda semana'
+                    : 'Todo mês'}
+            </button>
+          ))}
+        </div>
 
         <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Descrição (opcional)</label>
         <textarea
