@@ -79,6 +79,38 @@ export default function ChatPage() {
     textareaRef.current?.focus();
   }, []);
 
+  // Carrega histórico do contexto ao entrar na tela ou trocar de modo
+  useEffect(() => {
+    let cancelled = false;
+    (async (): Promise<void> => {
+      try {
+        const res = await apiClient<{
+          messages: {
+            id: string;
+            role: 'user' | 'assistant';
+            content: string;
+            citations?: { title: string; url: string }[] | null;
+          }[];
+        }>(`/api/love/history?context=${encodeURIComponent(context)}&limit=50`);
+        if (cancelled) return;
+        setMessages(
+          res.messages.map((m) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            citations: m.citations ?? undefined,
+          })),
+        );
+      } catch {
+        // silencioso: se não tem histórico, começa vazio
+        if (!cancelled) setMessages([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [context]);
+
   const sendContent = useCallback(
     async (content: string): Promise<void> => {
       if (!content || sending) return;
