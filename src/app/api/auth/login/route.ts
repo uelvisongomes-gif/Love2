@@ -21,7 +21,7 @@ export async function POST(req: Request): Promise<Response> {
     sameSite: 'lax',
     secure: isProd,
     path: '/',
-    maxAge: 15 * 60,
+    maxAge: 7 * 24 * 60 * 60,
   });
   response.cookies.set(REFRESH_COOKIE, json.refreshToken as string, {
     httpOnly: true,
