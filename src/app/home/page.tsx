@@ -103,7 +103,6 @@ const CONSTRUIR: CardDef[] = [
     title: 'Filhos',
     description: 'Compromissos, escola, quem leva/busca.',
     privacy: 'casal',
-    comingSoon: true,
   },
   {
     href: '/metas',
@@ -111,7 +110,6 @@ const CONSTRUIR: CardDef[] = [
     title: 'Metas',
     description: 'Viagens, casa, projetos, reserva.',
     privacy: 'casal',
-    comingSoon: true,
   },
   {
     href: '/tempo-casal',
@@ -119,7 +117,6 @@ const CONSTRUIR: CardDef[] = [
     title: 'Tempo do casal',
     description: 'Encontros, jantar, momentos sem celular.',
     privacy: 'casal',
-    comingSoon: true,
   },
 ];
 
