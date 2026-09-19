@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Send } from 'lucide-react';
@@ -56,9 +56,13 @@ const CONTEXTS: { value: Context; label: string; description: string; intro: str
 
 export default function ChatPage() {
   const router = useRouter();
+  const search = useSearchParams();
+  const initial = (search.get('modo') as Context | null) ?? 'general';
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [context, setContext] = useState<Context>('general');
+  const [context, setContext] = useState<Context>(
+    ['general', 'conflict', 'check-in', 'journal'].includes(initial) ? initial : 'general',
+  );
   const [sending, setSending] = useState(false);
   const [dialogueMode, setDialogueMode] = useState(false);
   const [lastAssistantSpeech, setLastAssistantSpeech] = useState<string | null>(null);
