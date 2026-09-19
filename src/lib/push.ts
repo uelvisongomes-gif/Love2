@@ -42,7 +42,7 @@ export async function subscribePush(publicKey: string): Promise<PushSubscription
   const reg = await navigator.serviceWorker.ready;
   const existing = await reg.pushManager.getSubscription();
   if (existing) return existing;
-  const applicationServerKey = urlBase64ToUint8Array(publicKey);
+  const applicationServerKey = urlBase64ToUint8Array(publicKey).buffer.slice(0) as ArrayBuffer;
   return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey });
 }
 
