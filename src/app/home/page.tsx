@@ -96,7 +96,6 @@ const CONSTRUIR: CardDef[] = [
     title: 'Finanças',
     description: 'Contas do mês, compras grandes, decisões.',
     privacy: 'casal',
-    comingSoon: true,
   },
   {
     href: '/filhos',
