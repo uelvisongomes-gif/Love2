@@ -59,6 +59,7 @@ export default function TarefasPage(): React.ReactElement {
   const [status, setStatus] = useState<Status>('open');
   const [category, setCategory] = useState<Category | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [editing, setEditing] = useState<Task | null>(null);
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
 
@@ -326,13 +327,22 @@ export default function TarefasPage(): React.ReactElement {
                     ) : null}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => remove(t.id)}
-                  className="text-[11px] text-muted hover:text-red-600"
-                >
-                  Excluir
-                </button>
+                <div className="flex flex-col items-end gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setEditing(t)}
+                    className="text-[11px] text-muted hover:text-primary"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => remove(t.id)}
+                    className="text-[11px] text-muted hover:text-red-600"
+                  >
+                    Excluir
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -346,10 +356,20 @@ export default function TarefasPage(): React.ReactElement {
       </main>
 
       {showCreate && (
-        <CreateTaskModal
+        <TaskModal
           onClose={() => setShowCreate(false)}
-          onCreated={() => {
+          onSaved={() => {
             setShowCreate(false);
+            void load();
+          }}
+        />
+      )}
+      {editing && (
+        <TaskModal
+          task={editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
             void load();
           }}
         />
@@ -382,20 +402,34 @@ function FilterChip({
   );
 }
 
-function CreateTaskModal({
+function TaskModal({
+  task,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  task?: Task;
   onClose: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 }): React.ReactElement {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<Category>('casa');
-  const [assignTo, setAssignTo] = useState<'me' | 'partner' | 'both'>('both');
-  const [dueBy, setDueBy] = useState('');
-  const [remindTime, setRemindTime] = useState('');
-  const [recurrence, setRecurrence] = useState<'nunca' | Recurrence>('nunca');
+  const isEdit = !!task;
+  const [title, setTitle] = useState(task?.title ?? '');
+  const [description, setDescription] = useState(task?.description ?? '');
+  const [category, setCategory] = useState<Category>(task?.category ?? 'casa');
+  const [assignTo, setAssignTo] = useState<'me' | 'partner' | 'both'>(
+    task ? (task.assignedTo ? 'me' : 'both') : 'both',
+  );
+  const [dueBy, setDueBy] = useState<string>(
+    task?.dueBy ? task.dueBy.slice(0, 10) : '',
+  );
+  const [remindTime, setRemindTime] = useState<string>(
+    task?.remindAt
+      ? new Date(task.remindAt).toLocaleTimeString('pt-BR', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '',
+  );
+  const [recurrence, setRecurrence] = useState<'nunca' | Recurrence>(task?.recurrence ?? 'nunca');
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(): Promise<void> {
@@ -411,21 +445,38 @@ function CreateTaskModal({
         today.setHours(h ?? 0, m ?? 0, 0, 0);
         remindAt = today.toISOString();
       }
-      await apiClient('/api/tasks', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim() || undefined,
-          category,
-          pillar: PILLAR_FOR_CATEGORY[category],
-          assignTo,
-          dueBy: dueBy ? new Date(dueBy).toISOString() : undefined,
-          recurrence: recurrence === 'nunca' ? undefined : recurrence,
-          remindAt,
-        }),
-      });
-      toast.success('Tarefa criada.');
-      onCreated();
+      const payload = {
+        title: title.trim(),
+        description: description.trim() || null,
+        category,
+        pillar: PILLAR_FOR_CATEGORY[category],
+        assignTo,
+        dueBy: dueBy ? new Date(dueBy).toISOString() : null,
+        recurrence: recurrence === 'nunca' ? null : recurrence,
+        remindAt: remindAt ?? null,
+      };
+      if (isEdit && task) {
+        // PATCH — não manda pillar (não muda) mas manda o resto
+        const { pillar: _pillar, ...patchPayload } = payload;
+        await apiClient(`/api/tasks/${task.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(patchPayload),
+        });
+        toast.success('Tarefa atualizada.');
+      } else {
+        await apiClient('/api/tasks', {
+          method: 'POST',
+          body: JSON.stringify({
+            ...payload,
+            description: payload.description ?? undefined,
+            dueBy: payload.dueBy ?? undefined,
+            recurrence: payload.recurrence ?? undefined,
+            remindAt: payload.remindAt ?? undefined,
+          }),
+        });
+        toast.success('Tarefa criada.');
+      }
+      onSaved();
     } catch (err) {
       toast.error((err as Error).message || 'Erro.');
     } finally {
@@ -436,8 +487,10 @@ function CreateTaskModal({
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className="bg-bg rounded-2xl border border-rule max-w-lg w-full p-6 shadow-lg">
-        <p className="type-eyebrow mb-2">— nova tarefa</p>
-        <h2 className="font-display text-2xl text-heading tracking-tight mb-4">Criar tarefa</h2>
+        <p className="type-eyebrow mb-2">— {isEdit ? 'editar' : 'nova tarefa'}</p>
+        <h2 className="font-display text-2xl text-heading tracking-tight mb-4">
+          {isEdit ? 'Editar tarefa' : 'Criar tarefa'}
+        </h2>
 
         <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Título</label>
         <input
@@ -559,7 +612,7 @@ function CreateTaskModal({
             disabled={submitting || !title.trim()}
             className="h-10 px-5 rounded-full text-sm font-semibold bg-primary text-[hsl(var(--primary-fg))] hover:bg-primary/90 disabled:opacity-50"
           >
-            {submitting ? 'Salvando...' : 'Criar tarefa'}
+            {submitting ? 'Salvando...' : isEdit ? 'Salvar' : 'Criar tarefa'}
           </button>
         </div>
       </div>
