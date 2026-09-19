@@ -324,8 +324,8 @@ export default function CicloPage(): React.ReactElement {
                       onChange={(v) => updateProfile({ sharePeriodStart: v })}
                     />
                     <Toggle
-                      label="Período pré-menstrual"
-                      description="Ele recebe aviso um dia antes do começo estimado."
+                      label="Avisar TPM 1 dia antes"
+                      description="Ele recebe um email no dia anterior ao começo estimado da TPM — pra estar mais presente."
                       value={profile.sharePreMenstrual}
                       disabled={!profile.shareWithPartner}
                       onChange={(v) => updateProfile({ sharePreMenstrual: v })}
@@ -368,7 +368,7 @@ export default function CicloPage(): React.ReactElement {
                         className="w-24 h-9 rounded-lg border border-rule bg-bg px-2 text-sm mb-3"
                       />
                       <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">
-                        Dias antes que costumo sentir mudança
+                        TPM — dias antes que costumo sentir mudança
                       </label>
                       <input
                         type="number"
@@ -381,6 +381,9 @@ export default function CicloPage(): React.ReactElement {
                         onBlur={() => updateProfile({ premenstrualDays: profile.premenstrualDays })}
                         className="w-24 h-9 rounded-lg border border-rule bg-bg px-2 text-sm"
                       />
+                      <p className="text-[11px] text-muted mt-1">
+                        Média: 5-7 dias antes. Ajusta pro que faz sentido pra você.
+                      </p>
                     </div>
                   </div>
                 )}
