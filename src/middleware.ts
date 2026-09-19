@@ -7,6 +7,7 @@ const PROTECTED_PREFIXES = [
   '/checkin',
   '/journal',
   '/tarefas',
+  '/acordos',
   '/parceiro',
   '/perfil',
   '/onboarding',

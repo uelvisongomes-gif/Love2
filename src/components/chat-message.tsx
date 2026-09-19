@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Play, Square } from 'lucide-react';
+import { Play, Square, BookmarkPlus, Check } from 'lucide-react';
 import { RingsAvatar } from './rings-avatar';
 import { speakText, stopSpeaking } from '@/lib/speech';
 
@@ -13,6 +13,8 @@ interface Props {
   role: 'user' | 'assistant';
   content: string;
   citations?: Citation[];
+  showSaveAgreement?: boolean;
+  onSaveAgreement?: (content: string) => void;
 }
 
 function AssistantMarkdown({ text }: { text: string }): React.ReactElement {
@@ -111,7 +113,42 @@ function PlayButton({ text }: { text: string }): React.ReactElement | null {
   );
 }
 
-export function ChatMessage({ role, content, citations }: Props): React.ReactElement {
+function SaveAgreementButton({
+  content,
+  onSave,
+}: {
+  content: string;
+  onSave: (content: string) => void;
+}): React.ReactElement {
+  const [saved, setSaved] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onSave(content);
+        setSaved(true);
+      }}
+      disabled={saved}
+      title="Salvar como acordo"
+      className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-semibold border transition-colors ${
+        saved
+          ? 'bg-primary/10 text-primary border-primary/40 cursor-default'
+          : 'bg-bg text-primary border-primary/40 hover:bg-primary/10'
+      }`}
+    >
+      {saved ? <Check className="w-3 h-3" /> : <BookmarkPlus className="w-3 h-3" />}
+      <span>{saved ? 'Salvo' : 'Salvar acordo'}</span>
+    </button>
+  );
+}
+
+export function ChatMessage({
+  role,
+  content,
+  citations,
+  showSaveAgreement,
+  onSaveAgreement,
+}: Props): React.ReactElement {
   if (role === 'user') {
     return (
       <div className="flex justify-end">
@@ -130,7 +167,12 @@ export function ChatMessage({ role, content, citations }: Props): React.ReactEle
         <div className="rounded-2xl rounded-tl-md bg-surface border border-rule px-4 py-3">
           <AssistantMarkdown text={content} />
           <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
-            <PlayButton text={content} />
+            <div className="flex items-center gap-2 flex-wrap">
+              <PlayButton text={content} />
+              {showSaveAgreement && onSaveAgreement && (
+                <SaveAgreementButton content={content} onSave={onSaveAgreement} />
+              )}
+            </div>
             {citations && citations.length > 0 && (
               <div className="text-[10px] uppercase tracking-wider text-muted font-semibold">
                 {citations.length} {citations.length === 1 ? 'fonte' : 'fontes'}

@@ -60,6 +60,8 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false);
   const [dialogueMode, setDialogueMode] = useState(false);
   const [lastAssistantSpeech, setLastAssistantSpeech] = useState<string | null>(null);
+  const [agreementDraft, setAgreementDraft] = useState<{ title: string; content: string } | null>(null);
+  const [savingAgreement, setSavingAgreement] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -128,6 +130,37 @@ export default function ChatPage() {
     [sendContent],
   );
 
+  const onSaveAgreement = useCallback((content: string): void => {
+    // Sugere um título curto pegando a primeira frase (até 80 chars)
+    const firstSentence = content.split(/[.!?\n]/).find((s) => s.trim().length > 0) ?? '';
+    const suggestedTitle = firstSentence.trim().slice(0, 80);
+    setAgreementDraft({ title: suggestedTitle, content });
+  }, []);
+
+  async function submitAgreement(): Promise<void> {
+    if (!agreementDraft) return;
+    if (!agreementDraft.title.trim() || !agreementDraft.content.trim()) {
+      toast.error('Preenche o título e o texto do acordo.');
+      return;
+    }
+    setSavingAgreement(true);
+    try {
+      await apiClient('/api/agreements', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: agreementDraft.title.trim(),
+          content: agreementDraft.content.trim(),
+        }),
+      });
+      toast.success('Acordo salvo — vê em /acordos');
+      setAgreementDraft(null);
+    } catch (err) {
+      toast.error((err as Error).message || 'Não consegui salvar o acordo.');
+    } finally {
+      setSavingAgreement(false);
+    }
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -171,7 +204,14 @@ export default function ChatPage() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto py-4 space-y-6">
           {empty && <EmptyState contextData={CONTEXTS.find((c) => c.value === context)!} />}
           {messages.map((m) => (
-            <ChatMessage key={m.id} role={m.role} content={m.content} citations={m.citations} />
+            <ChatMessage
+              key={m.id}
+              role={m.role}
+              content={m.content}
+              citations={m.citations}
+              showSaveAgreement={m.role === 'assistant' && context === 'conflict'}
+              onSaveAgreement={onSaveAgreement}
+            />
           ))}
           {sending && <TypingIndicator />}
         </div>
@@ -215,10 +255,57 @@ export default function ChatPage() {
                 ? '📻 Modo diálogo — fala e a LOVE responde por voz'
                 : '🎤 pra falar · 📻 pra modo diálogo por voz contínuo'}
             </span>
-            <Link href="/home" className="hover:text-heading">← Início</Link>
+            <div className="flex items-center gap-3">
+              <Link href="/acordos" className="hover:text-heading">Acordos</Link>
+              <Link href="/home" className="hover:text-heading">← Início</Link>
+            </div>
           </div>
         </form>
       </div>
+
+      {agreementDraft && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          <div className="bg-bg rounded-2xl border border-rule max-w-xl w-full p-6 shadow-lg">
+            <p className="type-eyebrow mb-2">— novo acordo</p>
+            <h2 className="font-display text-2xl text-heading tracking-tight mb-4">Salvar acordo</h2>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Título curto</label>
+            <input
+              type="text"
+              value={agreementDraft.title}
+              onChange={(e) => setAgreementDraft({ ...agreementDraft, title: e.target.value })}
+              maxLength={200}
+              className="w-full h-10 rounded-lg border border-rule bg-bg px-3 text-sm text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mb-4"
+              placeholder="Ex: pausar quando ficar intenso"
+            />
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">Texto do acordo</label>
+            <textarea
+              value={agreementDraft.content}
+              onChange={(e) => setAgreementDraft({ ...agreementDraft, content: e.target.value })}
+              maxLength={4000}
+              rows={5}
+              className="w-full resize-none rounded-lg border border-rule bg-bg p-3 text-sm text-text leading-relaxed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mb-5"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setAgreementDraft(null)}
+                disabled={savingAgreement}
+                className="h-10 px-4 rounded-full text-sm font-semibold text-text hover:bg-surface transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={submitAgreement}
+                disabled={savingAgreement}
+                className="h-10 px-5 rounded-full text-sm font-semibold bg-primary text-[hsl(var(--primary-fg))] hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                {savingAgreement ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

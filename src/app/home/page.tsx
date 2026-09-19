@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MessageCircleHeart, UserPlus, Sprout, BookHeart } from 'lucide-react';
+import { MessageCircleHeart, UserPlus, Sprout, BookHeart, Handshake } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -40,8 +40,9 @@ export default function HomePage() {
         </Link>
 
         {/* Secondary CTAs */}
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-2">
           <SecondaryCard href="/parceiro" icon={<UserPlus className="w-5 h-5" />} title="Convidar parceiro" description="Vincule vocês pra ativar a ponte." />
+          <SecondaryCard href="/acordos" icon={<Handshake className="w-5 h-5" />} title="Acordos" description="O que vocês combinaram — cumpridos e em andamento." />
           <SecondaryCard href="/checkin" icon={<Sprout className="w-5 h-5" />} title="Check-in do dia" description="1 minuto: como foi hoje?" comingSoon />
           <SecondaryCard href="/journal" icon={<BookHeart className="w-5 h-5" />} title="Só pra você" description="Diário privado, ninguém vê." comingSoon />
         </div>
