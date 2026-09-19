@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Fraunces, Manrope } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { QueryProvider } from '@/lib/query-provider';
@@ -21,12 +21,15 @@ export const metadata: Metadata = {
   description:
     'Uma mediadora pra conversar melhor com quem você ama. Não é psicóloga, não é terapeuta — é escuta e caminho.',
   manifest: '/manifest.json',
-  themeColor: '#c9694a',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'love2',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#c9694a',
 };
 
 // Set the theme on <html> BEFORE React hydrates to avoid a flash of wrong theme.
