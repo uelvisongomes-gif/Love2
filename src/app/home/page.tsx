@@ -74,6 +74,13 @@ const RESOLVER: CardDef[] = [
     privacy: 'privado',
   },
   {
+    href: '/mediacoes',
+    icon: <MessageCircleHeart className="w-5 h-5" />,
+    title: 'Mediação conjunta',
+    description: 'Vocês dois respondem 4 perguntas — LOVE sintetiza.',
+    privacy: 'casal',
+  },
+  {
     href: '/acordos',
     icon: <Handshake className="w-5 h-5" />,
     title: 'Acordos do casal',

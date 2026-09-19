@@ -13,6 +13,8 @@ const PROTECTED_PREFIXES = [
   '/tempo-casal',
   '/ciclo',
   '/ciclo-parceira',
+  '/mediacao',
+  '/mediacoes',
   '/acordos',
   '/parceiro',
   '/perfil',
