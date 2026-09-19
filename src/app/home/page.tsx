@@ -199,7 +199,7 @@ function Pillar({
     <section className="mb-10">
       <div className="mb-4">
         <p className="type-eyebrow mb-1">{eyebrow}</p>
-        <h2 className="font-display italic text-2xl md:text-3xl text-primary tracking-tight">
+        <h2 className="font-display italic text-2xl md:text-3xl text-[hsl(var(--secondary))] tracking-tight">
           {title}
         </h2>
         <p className="text-xs text-muted font-medium mt-1">{description}</p>
