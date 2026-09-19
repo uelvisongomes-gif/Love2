@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { Fraunces, Manrope } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { QueryProvider } from '@/lib/query-provider';
+import { InstallPWA } from '@/components/install-pwa';
+import { ServiceWorkerRegister } from '@/components/sw-register';
 import './globals.css';
 
 const manrope = Manrope({
@@ -21,15 +23,35 @@ export const metadata: Metadata = {
   description:
     'Uma mediadora pra conversar melhor com quem você ama. Não é psicóloga, não é terapeuta — é escuta e caminho.',
   manifest: '/manifest.json',
+  applicationName: 'love2',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'love2',
   },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'love2',
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: '#c9694a',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
 };
 
 // Set the theme on <html> BEFORE React hydrates to avoid a flash of wrong theme.
@@ -50,7 +72,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <QueryProvider>
+          <ServiceWorkerRegister />
           {children}
+          <InstallPWA />
           <Toaster position="top-center" richColors />
         </QueryProvider>
       </body>
