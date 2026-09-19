@@ -14,6 +14,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   citations?: { title: string; url: string }[];
+  proposedAgreement?: string;
 }
 
 type Context = 'general' | 'conflict' | 'check-in' | 'journal';
@@ -23,6 +24,7 @@ interface ChatResponse {
   safety: { category: string };
   citations: { title: string; url: string }[];
   messageId: string;
+  proposedAgreement?: string;
 }
 
 const CONTEXTS: { value: Context; label: string; description: string; intro: string }[] = [
@@ -94,6 +96,7 @@ export default function ChatPage() {
             role: 'assistant',
             content: res.reply,
             citations: res.citations,
+            proposedAgreement: res.proposedAgreement,
           },
         ]);
         setLastAssistantSpeech(res.reply);
@@ -209,8 +212,10 @@ export default function ChatPage() {
               role={m.role}
               content={m.content}
               citations={m.citations}
-              showSaveAgreement={m.role === 'assistant' && context === 'conflict'}
-              onSaveAgreement={onSaveAgreement}
+              showSaveAgreement={
+                m.role === 'assistant' && context === 'conflict' && !!m.proposedAgreement
+              }
+              onSaveAgreement={() => onSaveAgreement(m.proposedAgreement!)}
             />
           ))}
           {sending && <TypingIndicator />}
