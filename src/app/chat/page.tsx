@@ -65,10 +65,14 @@ export default function ChatPage() {
   const [agreementDraft, setAgreementDraft] = useState<{ title: string; content: string } | null>(null);
   const [savingAgreement, setSavingAgreement] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    // Scroll do container interno (quando há altura fixa) e também da janela (fallback)
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, sending]);
 
   useEffect(() => {
@@ -175,10 +179,10 @@ export default function ChatPage() {
   const empty = messages.length === 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
+    <div className="h-[100dvh] flex flex-col bg-bg overflow-hidden">
       <AppHeader />
 
-      <div className="flex-1 flex flex-col max-w-3xl w-full mx-auto px-4 md:px-6">
+      <div className="flex-1 min-h-0 flex flex-col max-w-3xl w-full mx-auto px-4 md:px-6">
         {/* context switcher */}
         <div className="pt-6 pb-2 flex flex-wrap gap-2">
           {CONTEXTS.map((c) => (
@@ -204,7 +208,7 @@ export default function ChatPage() {
         )}
 
         {/* messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto py-4 space-y-6">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto py-4 space-y-6">
           {empty && <EmptyState contextData={CONTEXTS.find((c) => c.value === context)!} />}
           {messages.map((m) => (
             <ChatMessage
@@ -219,6 +223,7 @@ export default function ChatPage() {
             />
           ))}
           {sending && <TypingIndicator />}
+          <div ref={bottomRef} aria-hidden />
         </div>
 
         {/* input */}
