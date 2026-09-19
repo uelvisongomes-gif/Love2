@@ -11,6 +11,8 @@ const PROTECTED_PREFIXES = [
   '/filhos',
   '/metas',
   '/tempo-casal',
+  '/ciclo',
+  '/ciclo-parceira',
   '/acordos',
   '/parceiro',
   '/perfil',

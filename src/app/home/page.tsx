@@ -12,6 +12,7 @@ import {
   Target,
   HeartHandshake,
   CalendarHeart,
+  Heart,
 } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { buttonVariants } from '@/components/ui/button';
@@ -54,7 +55,13 @@ const CUIDAR: CardDef[] = [
     title: 'Meu ciclo',
     description: 'Calendário do ciclo e preferências de cuidado.',
     privacy: 'privado',
-    comingSoon: true,
+  },
+  {
+    href: '/ciclo-parceira',
+    icon: <Heart className="w-5 h-5" />,
+    title: 'Ciclo dela',
+    description: 'Se ela compartilhou com você — como cuidar melhor.',
+    privacy: 'casal',
   },
 ];
 
