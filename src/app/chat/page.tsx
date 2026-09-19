@@ -79,6 +79,11 @@ export default function ChatPage() {
     textareaRef.current?.focus();
   }, []);
 
+  // Refoca o textarea sempre que parar de enviar (mensagem enviada + resposta chegou)
+  useEffect(() => {
+    if (!sending) textareaRef.current?.focus();
+  }, [sending]);
+
   // Carrega histórico do contexto ao entrar na tela ou trocar de modo
   useEffect(() => {
     let cancelled = false;
