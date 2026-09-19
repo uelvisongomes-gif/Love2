@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <g transform="translate(60 60)" fill="none" stroke-width="10" stroke-linecap="round">
+    <circle cx="-24" cy="0" r="30" stroke="#e6604a"/>
+    <circle cx="24" cy="0" r="30" stroke="#1e2e4a"/>
+    <path d="M -6 -25 A 30 30 0 0 1 6 -25 M -6 25 A 30 30 0 0 0 6 25" fill="#f5c5b4" opacity="0.5" stroke="none"/>
+  </g>
+  <text x="130" y="76" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="64" fill="#1e2e4a" letter-spacing="-1">
+    love<tspan fill="#e6604a">2</tspan>
+  </text>
+</svg>

@@ -70,9 +70,11 @@ export default function ForgotPasswordPage() {
     <main className="min-h-screen bg-bg flex flex-col">
       <div className="w-full border-b border-rule">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 font-display text-lg text-heading">
-            <RingsLogo size={32} />
-            love2
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <RingsLogo size={40} />
+            <span className="font-display text-xl text-heading tracking-tight">
+              love<span className="text-primary">2</span>
+            </span>
           </Link>
           <ThemeToggle />
         </div>

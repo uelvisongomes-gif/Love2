@@ -3,22 +3,26 @@ interface Props {
   className?: string;
 }
 
-/** Two interlocked wedding rings — the love2 mark.
- *  Colors come from CSS tokens so it adapts to light/dark automatically. */
-export function RingsLogo({ size = 34, className }: Props) {
-  const height = Math.round((size * 20) / 34);
+/** Two interlocked rings (infinity/lemniscate) — the love2 mark.
+ *  Left ring: coral. Right ring: navy. Center overlap: soft blush. */
+export function RingsLogo({ size = 40, className }: Props): React.ReactElement {
   return (
     <svg
       width={size}
-      height={height}
-      viewBox="0 0 34 20"
+      height={Math.round(size * 0.5)}
+      viewBox="0 0 60 30"
       fill="none"
       aria-hidden="true"
       className={className}
     >
-      <circle cx="10" cy="10" r="7.5" stroke="hsl(var(--rings-primary))" strokeWidth="1.8" />
-      <circle cx="24" cy="10" r="7.5" stroke="hsl(var(--rings-secondary))" strokeWidth="1.8" fill="none" />
-      <path d="M 15.5 4.5 A 7.5 7.5 0 0 1 17.5 10" stroke="hsl(var(--rings-primary))" strokeWidth="1.8" fill="none" />
+      <circle cx="18" cy="15" r="12" stroke="hsl(var(--rings-primary))" strokeWidth="3" />
+      <circle cx="42" cy="15" r="12" stroke="hsl(var(--rings-secondary))" strokeWidth="3" />
+      <path
+        d="M 24 5 A 12 12 0 0 1 36 5 M 24 25 A 12 12 0 0 0 36 25"
+        fill="hsl(var(--rings-blush))"
+        fillOpacity="0.5"
+        stroke="none"
+      />
     </svg>
   );
 }

@@ -13,10 +13,12 @@ export function AppHeader({ variant = 'app' }: Props) {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href={variant === 'app' ? '/home' : '/'}
-          className="flex items-center gap-2.5 font-display text-lg text-heading tracking-tight hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
         >
-          <RingsLogo size={32} />
-          love2
+          <RingsLogo size={40} />
+          <span className="font-display text-xl text-heading tracking-tight">
+            love<span className="text-primary">2</span>
+          </span>
         </Link>
         <div className="flex items-center gap-1">
           <ThemeToggle />

@@ -15,18 +15,19 @@
     --text: 214 26% 16%;
     --heading: 214 33% 12%;
     --muted: 220 14% 34%;
-    --primary: 11 68% 55%;
+    --primary: 10 76% 60%;
     --primary-fg: 0 0% 100%;
-    --secondary: 213 30% 22%;
+    --secondary: 218 42% 20%;
     --secondary-fg: 0 0% 100%;
     --rule: 33 15% 91%;
     --danger: 0 68% 50%;
-    --ring: 11 68% 55%;
+    --ring: 10 76% 60%;
     --radius: 0.75rem;
 
     /* Rings mark colors (used by <RingsLogo/>) */
-    --rings-primary: 11 68% 55%;
-    --rings-secondary: 213 30% 22%;
+    --rings-primary: 10 76% 60%;
+    --rings-secondary: 218 42% 20%;
+    --rings-blush: 15 76% 84%;
   }
 
   :root:not([data-theme="light"]) {
@@ -35,40 +36,42 @@
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: 12 15% 11%;
-      --surface: 12 15% 14%;
+      --bg: 218 20% 8%;
+      --surface: 218 20% 12%;
       --text: 32 45% 88%;
-      --heading: 32 46% 91%;
-      --muted: 30 25% 72%;
-      --primary: 15 74% 65%;
-      --primary-fg: 12 15% 11%;
-      --secondary: 34 47% 90%;
-      --secondary-fg: 12 15% 11%;
-      --rule: 15 14% 18%;
+      --heading: 32 46% 94%;
+      --muted: 30 20% 72%;
+      --primary: 12 82% 68%;
+      --primary-fg: 218 20% 8%;
+      --secondary: 218 30% 82%;
+      --secondary-fg: 218 20% 8%;
+      --rule: 218 15% 20%;
       --danger: 0 70% 62%;
-      --ring: 15 74% 65%;
+      --ring: 12 82% 68%;
 
-      --rings-primary: 15 74% 65%;
-      --rings-secondary: 34 47% 90%;
+      --rings-primary: 12 82% 68%;
+      --rings-secondary: 218 30% 82%;
+      --rings-blush: 15 60% 75%;
     }
   }
 
   :root[data-theme="dark"] {
-    --bg: 12 15% 11%;
-    --surface: 12 15% 14%;
+    --bg: 218 20% 8%;
+    --surface: 218 20% 12%;
     --text: 32 45% 88%;
-    --heading: 32 46% 91%;
-    --muted: 30 25% 72%;
-    --primary: 15 74% 65%;
-    --primary-fg: 12 15% 11%;
-    --secondary: 34 47% 90%;
-    --secondary-fg: 12 15% 11%;
-    --rule: 15 14% 18%;
+    --heading: 32 46% 94%;
+    --muted: 30 20% 72%;
+    --primary: 12 82% 68%;
+    --primary-fg: 218 20% 8%;
+    --secondary: 218 30% 82%;
+    --secondary-fg: 218 20% 8%;
+    --rule: 218 15% 20%;
     --danger: 0 70% 62%;
-    --ring: 15 74% 65%;
+    --ring: 12 82% 68%;
 
-    --rings-primary: 15 74% 65%;
-    --rings-secondary: 34 47% 90%;
+    --rings-primary: 12 82% 68%;
+    --rings-secondary: 218 30% 82%;
+    --rings-blush: 15 60% 75%;
   }
 
   * {
