@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Home, Baby, Wallet, HeartHandshake, Target, Plus, Bell, BellOff } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { apiClient } from '@/lib/api-client';
+import { fireAlarm } from '@/lib/alarm';
 import {
   getExistingSubscription,
   isPushSupported,
@@ -139,6 +140,39 @@ export default function TarefasPage(): React.ReactElement {
     void load();
   }, [load]);
 
+  // Alarme sonoro: verifica a cada 15s se algum lembrete bateu enquanto a aba tá aberta
+  useEffect(() => {
+    const ALERTED_KEY = 'love2-alerted-task-ids';
+    const check = (): void => {
+      const now = Date.now();
+      const alertedRaw = (typeof window !== 'undefined' ? localStorage.getItem(ALERTED_KEY) : null) ?? '[]';
+      let alerted: string[] = [];
+      try {
+        alerted = JSON.parse(alertedRaw) as string[];
+      } catch {
+        alerted = [];
+      }
+      const alertedSet = new Set(alerted);
+      let added = false;
+      for (const t of tasks) {
+        if (!t.remindAt || t.completedAt) continue;
+        const remind = new Date(t.remindAt).getTime();
+        // Bateu nos últimos 3 min E ainda não avisou
+        if (remind <= now && remind >= now - 3 * 60 * 1000 && !alertedSet.has(t.id)) {
+          fireAlarm(`⏰ ${t.title}`, 'Lembrete do love2');
+          alertedSet.add(t.id);
+          added = true;
+        }
+      }
+      if (added && typeof window !== 'undefined') {
+        localStorage.setItem(ALERTED_KEY, JSON.stringify(Array.from(alertedSet)));
+      }
+    };
+    check();
+    const id = window.setInterval(check, 15_000);
+    return () => window.clearInterval(id);
+  }, [tasks]);
+
   async function toggleComplete(t: Task): Promise<void> {
     try {
       if (t.completedAt) {
@@ -179,6 +213,14 @@ export default function TarefasPage(): React.ReactElement {
               <em className="text-primary italic">Tarefas</em>
             </h1>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => fireAlarm('⏰ Teste', 'Se você tá ouvindo, funciona!')}
+                title="Testar som de alarme"
+                className="h-10 w-10 rounded-full flex items-center justify-center border bg-bg text-muted border-rule hover:text-primary hover:border-primary/50"
+              >
+                🔔
+              </button>
               <button
                 type="button"
                 onClick={togglePush}
