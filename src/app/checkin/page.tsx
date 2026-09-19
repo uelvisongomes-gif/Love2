@@ -66,6 +66,7 @@ export default function CheckinPage(): React.ReactElement {
   const [scores, setScores] = useState<Scores>(initial);
   const [openNote, setOpenNote] = useState('');
   const [showNote, setShowNote] = useState(false);
+  const [sharedWithPartner, setSharedWithPartner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(): Promise<void> {
@@ -76,6 +77,7 @@ export default function CheckinPage(): React.ReactElement {
         body: JSON.stringify({
           ...scores,
           openNote: openNote.trim() || undefined,
+          sharedWithPartner,
         }),
       });
       toast.success('Check-in salvo. Que orgulho de você.');
@@ -191,7 +193,29 @@ export default function CheckinPage(): React.ReactElement {
           )}
         </div>
 
-        <div className="mt-10 flex justify-between items-center">
+        {/* Privacy toggle */}
+        <div className="mt-8 rounded-2xl border border-rule bg-bg p-5">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={sharedWithPartner}
+              onChange={(e) => setSharedWithPartner(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded accent-primary"
+            />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-heading">
+                {sharedWithPartner ? '👥 Compartilhar com meu parceiro' : '🔒 Manter privado'}
+              </p>
+              <p className="text-xs text-muted font-medium mt-1 leading-relaxed">
+                {sharedWithPartner
+                  ? 'As notas (1-5) desse check-in vão aparecer no histórico do seu parceiro. O texto que você escreveu no campo aberto acima NUNCA é compartilhado — fica só entre você e a LOVE.'
+                  : 'Só você vê esse check-in. Nada aparece pro seu parceiro. Marca essa caixa se quiser compartilhar só as notas 1-5 com ele/ela.'}
+              </p>
+            </div>
+          </label>
+        </div>
+
+        <div className="mt-6 flex justify-between items-center">
           <Link href="/home" className="text-xs text-muted hover:text-primary">
             ← Início
           </Link>

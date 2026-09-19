@@ -80,12 +80,17 @@ export default function AcordosPage(): React.ReactElement {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 md:px-6 py-8">
         <div className="mb-8">
-          <p className="type-eyebrow mb-2">— histórico</p>
+          <div className="flex items-center gap-2 mb-2">
+            <p className="type-eyebrow">— histórico</p>
+            <span className="inline-flex items-center h-5 px-2 rounded-full text-[9px] uppercase tracking-wider font-semibold border border-primary/40 text-primary">
+              👥 casal
+            </span>
+          </div>
           <h1 className="font-display text-3xl md:text-4xl text-heading tracking-tight">
             Acordos do <em className="text-primary italic">casal</em>
           </h1>
           <p className="mt-2 text-sm text-text font-medium">
-            Combinados que vocês fizeram — pra lembrar, revisar, marcar como cumpridos.
+            Combinados que vocês fizeram. <strong className="text-heading">Ambos veem</strong>, ambos podem marcar como cumpridos.
           </p>
         </div>
 

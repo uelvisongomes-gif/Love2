@@ -14,6 +14,8 @@ interface Row {
   emotionalScore: number | null;
   openNote: string | null;
   moodOverall: number | null;
+  sharedWithPartner: boolean;
+  who: 'me' | 'partner';
 }
 
 type DimKey = keyof Pick<
@@ -73,6 +75,7 @@ function Sparkline({ values }: { values: (number | null)[] }): React.ReactElemen
 export default function CheckinHistoricoPage(): React.ReactElement {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewer, setViewer] = useState<'me' | 'partner'>('me');
 
   useEffect(() => {
     (async (): Promise<void> => {
@@ -87,6 +90,9 @@ export default function CheckinHistoricoPage(): React.ReactElement {
       }
     })();
   }, []);
+
+  const filtered = rows?.filter((r) => r.who === viewer) ?? null;
+  const hasPartnerData = (rows?.some((r) => r.who === 'partner') ?? false);
 
   return (
     <div className="min-h-screen flex flex-col bg-bg">
@@ -103,9 +109,36 @@ export default function CheckinHistoricoPage(): React.ReactElement {
           </p>
         </div>
 
+        {hasPartnerData && (
+          <div className="mb-6 inline-flex rounded-full border border-rule p-1 bg-surface">
+            <button
+              type="button"
+              onClick={() => setViewer('me')}
+              className={`h-8 px-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
+                viewer === 'me'
+                  ? 'bg-primary text-[hsl(var(--primary-fg))]'
+                  : 'text-text hover:text-primary'
+              }`}
+            >
+              🔒 Meus
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewer('partner')}
+              className={`h-8 px-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors ${
+                viewer === 'partner'
+                  ? 'bg-primary text-[hsl(var(--primary-fg))]'
+                  : 'text-text hover:text-primary'
+              }`}
+            >
+              👥 Parceiro
+            </button>
+          </div>
+        )}
+
         {loading && <p className="text-sm text-muted">Carregando...</p>}
 
-        {!loading && rows && rows.length === 0 && (
+        {!loading && filtered && filtered.length === 0 && (
           <div className="rounded-2xl border border-rule border-dashed p-10 text-center">
             <p className="text-sm text-text mb-4">Ainda sem check-ins.</p>
             <Link
@@ -117,11 +150,11 @@ export default function CheckinHistoricoPage(): React.ReactElement {
           </div>
         )}
 
-        {!loading && rows && rows.length > 0 && (
+        {!loading && filtered && filtered.length > 0 && (
           <>
             <ul className="space-y-3">
               {DIMS.map((d) => {
-                const values = rows.map((r) => r[d.key]);
+                const values = filtered.map((r) => r[d.key]);
                 const trend = trendLabel(values);
                 const last = [...values].reverse().find((v) => v !== null);
                 return (
@@ -158,11 +191,11 @@ export default function CheckinHistoricoPage(): React.ReactElement {
               })}
             </ul>
 
-            {rows.some((r) => r.openNote) && (
+            {viewer === 'me' && filtered.some((r) => r.openNote) && (
               <div className="mt-8">
-                <p className="type-eyebrow mb-2">— o que ficou pesando</p>
+                <p className="type-eyebrow mb-2">— o que ficou pesando (🔒 só você vê)</p>
                 <ul className="space-y-3">
-                  {rows
+                  {filtered
                     .filter((r) => r.openNote)
                     .slice(-5)
                     .reverse()

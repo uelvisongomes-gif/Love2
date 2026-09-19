@@ -239,8 +239,13 @@ export default function ChatPage() {
           ))}
         </div>
         {!empty && (
-          <p className="text-[11px] text-muted font-medium mb-2">
-            Modo <span className="text-primary font-semibold">{CONTEXTS.find((c) => c.value === context)!.label}</span> ativo
+          <p className="text-[11px] text-muted font-medium mb-2 flex items-center gap-2">
+            <span>
+              Modo <span className="text-primary font-semibold">{CONTEXTS.find((c) => c.value === context)!.label}</span> ativo
+            </span>
+            <span className="inline-flex items-center h-4 px-1.5 rounded-full text-[9px] uppercase tracking-wider font-semibold border border-muted/40 text-muted">
+              🔒 só você
+            </span>
           </p>
         )}
 

@@ -41,10 +41,10 @@ export default function HomePage() {
 
         {/* Secondary CTAs */}
         <div className="grid gap-3 md:grid-cols-2">
-          <SecondaryCard href="/parceiro" icon={<UserPlus className="w-5 h-5" />} title="Convidar parceiro" description="Vincule vocês pra ativar a ponte." />
-          <SecondaryCard href="/acordos" icon={<Handshake className="w-5 h-5" />} title="Acordos" description="O que vocês combinaram — cumpridos e em andamento." />
-          <SecondaryCard href="/checkin" icon={<Sprout className="w-5 h-5" />} title="Check-in do dia" description="1 minuto: como foi hoje?" />
-          <SecondaryCard href="/journal" icon={<BookHeart className="w-5 h-5" />} title="Só pra você" description="Diário privado, ninguém vê." comingSoon />
+          <SecondaryCard href="/parceiro" icon={<UserPlus className="w-5 h-5" />} title="Convidar parceiro" description="Vincule vocês pra ativar a ponte." privacy="casal" />
+          <SecondaryCard href="/acordos" icon={<Handshake className="w-5 h-5" />} title="Acordos" description="O que vocês combinaram — cumpridos e em andamento." privacy="casal" />
+          <SecondaryCard href="/checkin" icon={<Sprout className="w-5 h-5" />} title="Check-in do dia" description="1 minuto: como foi hoje?" privacy="privado" />
+          <SecondaryCard href="/journal" icon={<BookHeart className="w-5 h-5" />} title="Só pra você" description="Diário privado, ninguém vê." privacy="privado" comingSoon />
         </div>
 
         <div className="mt-6 text-center">
@@ -66,12 +66,34 @@ interface SecondaryProps {
   title: string;
   description: string;
   comingSoon?: boolean;
+  privacy?: 'privado' | 'casal';
 }
 
-function SecondaryCard({ href, icon, title, description, comingSoon }: SecondaryProps) {
+function PrivacyBadge({ kind }: { kind: 'privado' | 'casal' }): React.ReactElement {
+  const isPrivate = kind === 'privado';
+  return (
+    <span
+      className={`inline-flex items-center h-5 px-2 rounded-full text-[9px] uppercase tracking-wider font-semibold border ${
+        isPrivate
+          ? 'border-muted/40 text-muted'
+          : 'border-primary/40 text-primary'
+      }`}
+    >
+      {isPrivate ? '🔒 privado' : '👥 casal'}
+    </span>
+  );
+}
+
+function SecondaryCard({ href, icon, title, description, comingSoon, privacy }: SecondaryProps) {
   const inner = (
     <div className="rounded-lg border border-rule bg-bg p-4 h-full flex flex-col hover:border-primary/40 transition-colors">
-      <div className="flex items-center gap-2 text-primary mb-1.5">{icon}<span className="font-display italic text-base tracking-tight">{title}</span></div>
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center gap-2 text-primary">
+          {icon}
+          <span className="font-display italic text-base tracking-tight">{title}</span>
+        </div>
+        {privacy && <PrivacyBadge kind={privacy} />}
+      </div>
       <p className="text-sm text-text font-medium leading-relaxed flex-1">{description}</p>
       {comingSoon && (
         <p className="text-[10px] uppercase tracking-wider font-semibold text-muted mt-2">Em breve</p>
