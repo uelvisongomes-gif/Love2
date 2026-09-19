@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -54,7 +54,15 @@ const CONTEXTS: { value: Context; label: string; description: string; intro: str
   },
 ];
 
-export default function ChatPage() {
+export default function ChatPage(): React.ReactElement {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+      <ChatPageInner />
+    </Suspense>
+  );
+}
+
+function ChatPageInner(): React.ReactElement {
   const router = useRouter();
   const search = useSearchParams();
   const initial = (search.get('modo') as Context | null) ?? 'general';
