@@ -7,72 +7,79 @@ import {
   X,
   MessageCircleHeart,
   Sprout,
-  Flame,
   Handshake,
-  ListChecks,
-  Wallet,
-  Baby,
-  Target,
-  HeartHandshake,
-  CalendarHeart,
-  Heart,
+  Sparkles,
   Home,
-  UserPlus,
   User,
+  Users,
+  BookLock,
+  Settings,
+  LogOut,
 } from 'lucide-react';
 
 interface NavItem {
   href: string;
   icon: React.ReactNode;
   label: string;
+  hint?: string;
 }
 
-interface Pillar {
-  title: string;
+interface Section {
+  title?: string;
   items: NavItem[];
 }
 
-const PILLARS: Pillar[] = [
+const SECTIONS: Section[] = [
+  {
+    items: [{ href: '/home', icon: <Home className="w-4 h-4" />, label: 'Início' }],
+  },
   {
     title: 'Cuidar',
     items: [
-      { href: '/chat', icon: <MessageCircleHeart className="w-4 h-4" />, label: 'Conversar' },
-      { href: '/checkin', icon: <Sprout className="w-4 h-4" />, label: 'Check-in' },
-      { href: '/ciclo', icon: <CalendarHeart className="w-4 h-4" />, label: 'Meu ciclo' },
-      { href: '/ciclo-parceira', icon: <Heart className="w-4 h-4" />, label: 'Ciclo dela' },
+      { href: '/cuidar', icon: <Sparkles className="w-4 h-4" />, label: 'Cuidar', hint: 'espaço, escuta, ciclo' },
+      { href: '/checkin', icon: <Sprout className="w-4 h-4" />, label: 'Check-in', hint: 'como você está hoje' },
     ],
   },
   {
     title: 'Resolver',
     items: [
-      { href: '/chat?modo=conflict', icon: <Flame className="w-4 h-4" />, label: 'Tem conflito' },
-      { href: '/mediacoes', icon: <MessageCircleHeart className="w-4 h-4" />, label: 'Mediação conjunta' },
-      { href: '/acordos', icon: <Handshake className="w-4 h-4" />, label: 'Acordos' },
+      { href: '/resolver', icon: <Handshake className="w-4 h-4" />, label: 'Resolver', hint: 'conflito, mediação, acordo' },
     ],
   },
   {
     title: 'Construir',
     items: [
-      { href: '/tarefas', icon: <ListChecks className="w-4 h-4" />, label: 'Tarefas' },
-      { href: '/financas', icon: <Wallet className="w-4 h-4" />, label: 'Finanças' },
-      { href: '/filhos', icon: <Baby className="w-4 h-4" />, label: 'Filhos' },
-      { href: '/metas', icon: <Target className="w-4 h-4" />, label: 'Metas' },
-      { href: '/tempo-casal', icon: <HeartHandshake className="w-4 h-4" />, label: 'Tempo do casal' },
+      { href: '/construir', icon: <Sprout className="w-4 h-4" />, label: 'Construir', hint: 'tarefas, filhos, futuro' },
+    ],
+  },
+  {
+    title: 'Minha conta',
+    items: [
+      { href: '/perfil', icon: <User className="w-4 h-4" />, label: 'Meu perfil' },
+      { href: '/nos', icon: <Users className="w-4 h-4" />, label: 'Nós' },
+      { href: '/historia', icon: <BookLock className="w-4 h-4" />, label: 'Minha história' },
+      { href: '/config', icon: <Settings className="w-4 h-4" />, label: 'Configurações' },
     ],
   },
 ];
 
-const FOOTER: NavItem[] = [
-  { href: '/parceiro', icon: <UserPlus className="w-4 h-4" />, label: 'Vincular parceiro' },
-  { href: '/onboarding', icon: <User className="w-4 h-4" />, label: 'Meu perfil' },
-];
+function isActive(pathname: string, href: string): boolean {
+  const clean = href.split('?')[0] ?? href;
+  if (clean === '/home') return pathname === '/home';
+  return pathname === clean || pathname.startsWith(clean + '/');
+}
 
-export function SidebarNav(): React.ReactElement {
-  const [open, setOpen] = useState(false);
+interface DrawerProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function SidebarDrawer({ open, onClose }: DrawerProps): React.ReactElement | null {
   const pathname = usePathname();
 
   useEffect(() => {
-    setOpen(false);
+    onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   useEffect(() => {
@@ -83,6 +90,96 @@ export function SidebarNav(): React.ReactElement {
     };
   }, [open]);
 
+  if (!open) return null;
+
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch {
+      /* ignore */
+    }
+    window.location.href = '/entrar';
+  };
+
+  return (
+    <>
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        onClick={onClose}
+        aria-hidden
+      />
+      <aside className="fixed right-0 top-0 bottom-0 z-50 w-80 max-w-[88vw] bg-surface border-l border-rule shadow-2xl overflow-y-auto">
+        <div className="flex items-center justify-between px-5 h-16 border-b border-rule">
+          <span className="font-display text-xl text-heading tracking-tight">
+            love<span className="text-primary">2</span>
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar menu"
+            className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-bg transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <nav className="p-4 space-y-6">
+          {SECTIONS.map((section, idx) => (
+            <div key={section.title ?? `section-${idx}`}>
+              {section.title && (
+                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {section.title}
+                </p>
+              )}
+              <ul className="space-y-0.5">
+                {section.items.map((it) => {
+                  const active = isActive(pathname, it.href);
+                  return (
+                    <li key={it.href}>
+                      <Link
+                        href={it.href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          active
+                            ? 'bg-primary/12 text-primary'
+                            : 'text-text hover:bg-bg'
+                        }`}
+                      >
+                        <span className="shrink-0">{it.icon}</span>
+                        <span className="flex-1 min-w-0">
+                          <span className="block leading-tight">{it.label}</span>
+                          {it.hint && (
+                            <span className="block text-[11px] text-muted mt-0.5 font-normal">
+                              {it.hint}
+                            </span>
+                          )}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+
+          <div className="pt-4 border-t border-rule">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted hover:text-danger hover:bg-bg transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
+          </div>
+        </nav>
+      </aside>
+    </>
+  );
+}
+
+/** Hamburger button + drawer (used no header desktop) */
+export function SidebarNav(): React.ReactElement {
+  const [open, setOpen] = useState(false);
   return (
     <>
       <button
@@ -93,83 +190,7 @@ export function SidebarNav(): React.ReactElement {
       >
         <Menu className="w-5 h-5" />
       </button>
-
-      {open && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40 z-40"
-            onClick={() => setOpen(false)}
-            aria-hidden
-          />
-          <aside className="fixed left-0 top-0 bottom-0 z-50 w-72 max-w-[85vw] bg-bg border-r border-rule shadow-xl overflow-y-auto">
-            <div className="flex items-center justify-between px-5 h-16 border-b border-rule">
-              <span className="font-display text-xl text-heading tracking-tight">
-                love<span className="text-primary">2</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Fechar menu"
-                className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-surface"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <nav className="p-4 space-y-5">
-              <Link
-                href="/home"
-                className={`flex items-center gap-2.5 h-10 px-3 rounded-lg text-sm font-medium ${
-                  pathname === '/home' ? 'bg-primary/10 text-primary' : 'text-text hover:bg-surface'
-                }`}
-              >
-                <Home className="w-4 h-4" /> Início
-              </Link>
-
-              {PILLARS.map((p) => (
-                <div key={p.title}>
-                  <p className="type-eyebrow text-[hsl(var(--secondary))] px-3 mb-1 not-italic uppercase tracking-wider text-[10px] font-semibold">
-                    {p.title}
-                  </p>
-                  <ul className="space-y-0.5">
-                    {p.items.map((it) => {
-                      const active = pathname === it.href.split('?')[0];
-                      return (
-                        <li key={it.href}>
-                          <Link
-                            href={it.href}
-                            className={`flex items-center gap-2.5 h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
-                              active
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-text hover:bg-surface'
-                            }`}
-                          >
-                            {it.icon}
-                            {it.label}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-
-              <div className="pt-4 border-t border-rule space-y-0.5">
-                {FOOTER.map((it) => (
-                  <Link
-                    key={it.href}
-                    href={it.href}
-                    className="flex items-center gap-2.5 h-9 px-3 rounded-lg text-sm font-medium text-muted hover:text-text hover:bg-surface"
-                  >
-                    {it.icon}
-                    {it.label}
-                  </Link>
-                ))}
-              </div>
-            </nav>
-          </aside>
-        </>
-      )}
+      <SidebarDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

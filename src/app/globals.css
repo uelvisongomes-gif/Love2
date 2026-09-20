@@ -94,6 +94,13 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Bottom nav mobile clearance */
+  @media (max-width: 767px) {
+    body {
+      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+    }
+  }
+
   h1, h2, h3, h4 {
     font-family: var(--font-display), 'Times New Roman', serif;
     color: hsl(var(--heading));

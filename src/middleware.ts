@@ -19,6 +19,12 @@ const PROTECTED_PREFIXES = [
   '/parceiro',
   '/perfil',
   '/onboarding',
+  '/cuidar',
+  '/resolver',
+  '/construir',
+  '/nos',
+  '/historia',
+  '/config',
 ];
 const AUTH_PAGES = ['/entrar', '/registrar'];
 
