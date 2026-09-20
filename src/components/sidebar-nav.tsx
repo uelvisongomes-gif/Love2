@@ -112,7 +112,7 @@ export function SidebarDrawer({ open, onClose }: DrawerProps): React.ReactElemen
         onClick={onClose}
         aria-hidden
       />
-      <aside className="fixed right-0 top-0 bottom-0 z-50 w-80 max-w-[88vw] bg-surface border-l border-rule shadow-2xl overflow-y-auto">
+      <aside className="fixed left-0 top-0 bottom-0 z-50 w-80 max-w-[88vw] bg-surface border-r border-rule shadow-2xl overflow-y-auto">
         <div className="flex items-center justify-between px-5 h-16 border-b border-rule">
           <span className="font-display text-xl text-heading tracking-tight">
             love<span className="text-primary">2</span>
