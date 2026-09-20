@@ -26,6 +26,7 @@ const PROTECTED_PREFIXES = [
   '/historia',
   '/config',
   '/evolucao',
+  '/whatsapp',
 ];
 const AUTH_PAGES = ['/entrar', '/registrar'];
 

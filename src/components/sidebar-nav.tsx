@@ -16,6 +16,7 @@ import {
   Settings,
   LogOut,
   TrendingUp,
+  MessageSquare,
 } from 'lucide-react';
 
 interface NavItem {
@@ -60,6 +61,7 @@ const SECTIONS: Section[] = [
       { href: '/perfil', icon: <User className="w-4 h-4" />, label: 'Meu perfil' },
       { href: '/nos', icon: <Users className="w-4 h-4" />, label: 'Nós' },
       { href: '/historia', icon: <BookLock className="w-4 h-4" />, label: 'Minha história' },
+      { href: '/whatsapp', icon: <MessageSquare className="w-4 h-4" />, label: 'WhatsApp' },
       { href: '/config', icon: <Settings className="w-4 h-4" />, label: 'Configurações' },
     ],
   },
