@@ -36,42 +36,42 @@
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: 218 20% 8%;
-      --surface: 218 20% 12%;
-      --text: 32 45% 88%;
-      --heading: 32 46% 94%;
-      --muted: 30 20% 72%;
-      --primary: 12 82% 68%;
-      --primary-fg: 218 20% 8%;
-      --secondary: 218 30% 82%;
-      --secondary-fg: 218 20% 8%;
-      --rule: 218 15% 20%;
-      --danger: 0 70% 62%;
-      --ring: 12 82% 68%;
+      --bg: 222 45% 9%;
+      --surface: 222 38% 14%;
+      --text: 30 30% 90%;
+      --heading: 30 40% 96%;
+      --muted: 220 15% 68%;
+      --primary: 12 85% 68%;
+      --primary-fg: 222 45% 9%;
+      --secondary: 220 40% 88%;
+      --secondary-fg: 222 45% 9%;
+      --rule: 222 30% 22%;
+      --danger: 0 72% 65%;
+      --ring: 12 85% 68%;
 
-      --rings-primary: 12 82% 68%;
-      --rings-secondary: 218 30% 82%;
-      --rings-blush: 15 60% 75%;
+      --rings-primary: 12 85% 68%;
+      --rings-secondary: 220 45% 85%;
+      --rings-blush: 15 65% 78%;
     }
   }
 
   :root[data-theme="dark"] {
-    --bg: 218 20% 8%;
-    --surface: 218 20% 12%;
-    --text: 32 45% 88%;
-    --heading: 32 46% 94%;
-    --muted: 30 20% 72%;
-    --primary: 12 82% 68%;
-    --primary-fg: 218 20% 8%;
-    --secondary: 218 30% 82%;
-    --secondary-fg: 218 20% 8%;
-    --rule: 218 15% 20%;
-    --danger: 0 70% 62%;
-    --ring: 12 82% 68%;
+    --bg: 222 45% 9%;
+    --surface: 222 38% 14%;
+    --text: 30 30% 90%;
+    --heading: 30 40% 96%;
+    --muted: 220 15% 68%;
+    --primary: 12 85% 68%;
+    --primary-fg: 222 45% 9%;
+    --secondary: 220 40% 88%;
+    --secondary-fg: 222 45% 9%;
+    --rule: 222 30% 22%;
+    --danger: 0 72% 65%;
+    --ring: 12 85% 68%;
 
-    --rings-primary: 12 82% 68%;
-    --rings-secondary: 218 30% 82%;
-    --rings-blush: 15 60% 75%;
+    --rings-primary: 12 85% 68%;
+    --rings-secondary: 220 45% 85%;
+    --rings-blush: 15 65% 78%;
   }
 
   * {
