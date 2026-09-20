@@ -1,8 +1,19 @@
+'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MessageCircleHeart, Sprout, CalendarHeart, Heart } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
+import { apiClient } from '@/lib/api-client';
 
-const ITEMS = [
+interface Item {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  tag: 'privado' | 'casal';
+}
+
+const BASE_ITEMS: Item[] = [
   {
     href: '/chat',
     icon: <MessageCircleHeart className="w-5 h-5" />,
@@ -17,23 +28,44 @@ const ITEMS = [
     description: 'Um minuto pra registrar como você tá hoje.',
     tag: 'privado',
   },
-  {
-    href: '/ciclo',
-    icon: <CalendarHeart className="w-5 h-5" />,
-    title: 'Meu ciclo',
-    description: 'Calendário, TPM e preferências de cuidado.',
-    tag: 'privado',
-  },
-  {
-    href: '/ciclo-parceira',
-    icon: <Heart className="w-5 h-5" />,
-    title: 'Ciclo dela',
-    description: 'Se ela compartilhou, veja como cuidar melhor.',
-    tag: 'casal',
-  },
-] as const;
+];
+
+const MY_CYCLE: Item = {
+  href: '/ciclo',
+  icon: <CalendarHeart className="w-5 h-5" />,
+  title: 'Meu ciclo',
+  description: 'Calendário, TPM e preferências de cuidado.',
+  tag: 'privado',
+};
+
+const HER_CYCLE: Item = {
+  href: '/ciclo-parceira',
+  icon: <Heart className="w-5 h-5" />,
+  title: 'Ciclo dela',
+  description: 'Menstruação, TPM e como ela gosta de ser cuidada.',
+  tag: 'casal',
+};
 
 export default function CuidarPage(): React.ReactElement {
+  const [items, setItems] = useState<Item[]>(BASE_ITEMS);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const me = await apiClient<{ gender: string | null }>('/api/me');
+        const g = me.gender;
+        if (g === 'homem') setItems([...BASE_ITEMS, HER_CYCLE]);
+        else if (g === 'mulher' || g === 'naobinario' || g === null || g === undefined)
+          setItems([...BASE_ITEMS, MY_CYCLE]);
+        // prefiro_nao_dizer → mostra só os base
+        else setItems(BASE_ITEMS);
+      } catch {
+        // fallback: mostra os dois se o gender não carregou
+        setItems([...BASE_ITEMS, MY_CYCLE, HER_CYCLE]);
+      }
+    })();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-bg">
       <AppHeader />
@@ -49,7 +81,7 @@ export default function CuidarPage(): React.ReactElement {
         </header>
 
         <ul className="space-y-3">
-          {ITEMS.map((it) => (
+          {items.map((it) => (
             <li key={it.href}>
               <Link
                 href={it.href}

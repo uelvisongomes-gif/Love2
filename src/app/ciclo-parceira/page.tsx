@@ -12,9 +12,13 @@ interface PartnerData {
   partnerName?: string;
   prediction?: {
     nextPeriodStart?: string;
+    nextPeriodEnd?: string;
     nextPreMenstrual?: string;
     daysUntilPeriod?: number;
     currentPhase?: string;
+    averagePeriodDays?: number;
+    averageCycleDays?: number;
+    premenstrualDays?: number;
   };
   preferences?: string[];
   customNote?: string | null;
@@ -121,23 +125,36 @@ export default function CicloParceiraPage(): React.ReactElement {
                 </p>
                 <p className="font-display italic text-xl text-heading tracking-tight mt-1">
                   {formatDate(data.prediction.nextPeriodStart)}
+                  {data.prediction.nextPeriodEnd && (
+                    <span className="text-heading"> — {formatDate(data.prediction.nextPeriodEnd)}</span>
+                  )}
                   {data.prediction.daysUntilPeriod !== undefined && (
                     <span className="text-sm text-muted ml-2">
                       ({data.prediction.daysUntilPeriod > 0 ? `em ${data.prediction.daysUntilPeriod}d` : 'esperada'})
                     </span>
                   )}
                 </p>
+                {data.prediction.averagePeriodDays && (
+                  <p className="text-xs text-muted mt-1">
+                    Costuma durar ~{data.prediction.averagePeriodDays} dias
+                  </p>
+                )}
               </div>
             )}
 
             {data.prediction?.nextPreMenstrual && (
               <div className="rounded-xl border border-rule bg-bg p-4 mb-6">
                 <p className="text-[10px] uppercase tracking-wider text-muted font-semibold">
-                  Período pré-menstrual (estimado)
+                  Período pré-menstrual (TPM estimada)
                 </p>
                 <p className="font-display italic text-xl text-heading tracking-tight mt-1">
                   a partir de {formatDate(data.prediction.nextPreMenstrual)}
                 </p>
+                {data.prediction.premenstrualDays && (
+                  <p className="text-xs text-muted mt-1">
+                    Costuma sentir mudança ~{data.prediction.premenstrualDays} dias antes
+                  </p>
+                )}
               </div>
             )}
 
