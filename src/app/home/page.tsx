@@ -220,31 +220,21 @@ export default function HomePage(): React.ReactElement {
 
             {/* TAREFAS DE HOJE */}
             {data.tasksToday.length > 0 && (
-              <section className="rounded-2xl border border-rule bg-surface p-5">
-                <header className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <ListChecks className="w-4 h-4 text-primary" />
-                    <p className="font-display italic text-base text-heading">Hoje ou vencendo</p>
-                  </div>
-                  <Link
-                    href="/tarefas"
-                    className="text-[11px] text-muted hover:text-primary flex items-center gap-0.5"
-                  >
-                    ver tudo <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </header>
-                <ul className="space-y-1.5">
-                  {data.tasksToday.map((t) => (
-                    <li
-                      key={t.id}
-                      className="text-sm text-text/90 flex items-center gap-2 py-1"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                      <span className="flex-1">{t.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <Link
+                href="/tarefas"
+                className="flex items-center gap-3 rounded-xl border border-rule bg-surface hover:border-primary/40 hover:bg-primary/5 transition-colors p-4"
+              >
+                <ListChecks className="w-4 h-4 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-heading">
+                    {data.tasksToday.length === 1
+                      ? '1 tarefa pra hoje'
+                      : `${data.tasksToday.length} tarefas pra hoje ou vencendo`}
+                  </p>
+                  <p className="text-xs text-text/70">Toque pra ver e organizar</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted" />
+              </Link>
             )}
 
             {/* ACORDOS ABERTOS */}
