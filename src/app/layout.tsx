@@ -57,13 +57,16 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-// Set the theme on <html> BEFORE React hydrates to avoid a flash of wrong theme.
+// Default theme = light. Só usa dark se o usuário escolheu explicitamente.
+// Aplica ANTES do React hidratar pra evitar flash.
 const themeBootstrap = `
   (function() {
     try {
       var t = localStorage.getItem('theme');
-      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-    } catch (e) {}
+      document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
   })();
 `;
 
