@@ -226,12 +226,12 @@ export default function HomePage(): React.ReactElement {
               >
                 <ListChecks className="w-4 h-4 text-primary shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-heading">
+                  <p className="text-sm font-semibold text-heading">Tarefas diárias</p>
+                  <p className="text-xs text-text/70">
                     {data.tasksToday.length === 1
                       ? '1 tarefa pra hoje'
-                      : `${data.tasksToday.length} tarefas pra hoje ou vencendo`}
+                      : `${data.tasksToday.length} tarefas pra hoje`}
                   </p>
-                  <p className="text-xs text-text/70">Toque pra ver e organizar</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted" />
               </Link>
