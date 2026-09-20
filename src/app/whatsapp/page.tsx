@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AppHeader } from '@/components/app-header';
 import { apiClient } from '@/lib/api-client';
-import { MessageSquare, Copy, Check, Unlink, RefreshCw, Phone } from 'lucide-react';
+import { MessageSquare, Copy, Check, Unlink, RefreshCw, Phone, Send } from 'lucide-react';
 
 interface Status {
   linked: boolean;
@@ -232,6 +232,17 @@ export default function WhatsAppPage(): React.ReactElement {
                           )}
                         </button>
                       </div>
+                      {status.loveNumber && (
+                        <a
+                          href={`https://wa.me/${status.loveNumber.replace(/\D+/g, '')}?text=${encodeURIComponent(code.value)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full h-12 rounded-lg bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-colors inline-flex items-center justify-center gap-2"
+                        >
+                          <Send className="w-4 h-4" />
+                          Enviar código no WhatsApp da LOVE2
+                        </a>
+                      )}
                       <p className="text-xs text-muted">
                         Vale por 10 min. Abra o WhatsApp, procure o contato LOVE e mande esse
                         código como primeira mensagem.
