@@ -13,6 +13,7 @@ export async function POST(): Promise<Response> {
   const res = await fetch(BASE_URL + '/wame/link', {
     method: 'POST',
     headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' },
+    body: '{}',
   });
   const json = await res.json();
   return NextResponse.json(json, { status: res.status });
