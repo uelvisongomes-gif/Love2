@@ -5,7 +5,6 @@ import {
   Flame,
   Handshake,
   ListChecks,
-  UserPlus,
   Wallet,
   Baby,
   Target,
@@ -83,13 +82,6 @@ const RESOLVER: CardDef[] = [
 
 const CONSTRUIR: CardDef[] = [
   {
-    href: '/parceiro',
-    icon: <UserPlus className="w-5 h-5" />,
-    title: 'Vincular parceiro',
-    description: 'Ativa os espaços do casal.',
-    privacy: 'casal',
-  },
-  {
     href: '/tarefas',
     icon: <ListChecks className="w-5 h-5" />,
     title: 'Tarefas',
@@ -163,7 +155,13 @@ export default function HomePage(): React.ReactElement {
           cards={CONSTRUIR}
         />
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 flex justify-center gap-6">
+          <Link
+            href="/parceiro"
+            className={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'text-muted hover:text-primary')}
+          >
+            Vincular parceiro
+          </Link>
           <Link
             href="/onboarding"
             className={cn(buttonVariants({ variant: 'link', size: 'sm' }), 'text-muted hover:text-primary')}
