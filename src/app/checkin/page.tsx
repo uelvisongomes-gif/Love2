@@ -69,6 +69,14 @@ export default function CheckinPage(): React.ReactElement {
   const [sharedWithPartner, setSharedWithPartner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Etapa 3 — sinais do dia
+  const [sleepHours, setSleepHours] = useState<number | null>(null);
+  const [exercisedToday, setExercisedToday] = useState<boolean | null>(null);
+  const [frictionToday, setFrictionToday] = useState<boolean | null>(null);
+  const [frictionNote, setFrictionNote] = useState('');
+  const [intimacyToday, setIntimacyToday] = useState<boolean | null>(null);
+  const [positiveMemory, setPositiveMemory] = useState('');
+
   async function submit(): Promise<void> {
     setSubmitting(true);
     try {
@@ -78,6 +86,12 @@ export default function CheckinPage(): React.ReactElement {
           ...scores,
           openNote: openNote.trim() || undefined,
           sharedWithPartner,
+          sleepHours,
+          exercisedToday: exercisedToday ?? false,
+          frictionToday: frictionToday ?? false,
+          frictionNote: frictionNote.trim() || null,
+          intimacyToday: intimacyToday ?? false,
+          positiveMemory: positiveMemory.trim() || null,
         }),
       });
       toast.success('Check-in salvo. Que orgulho de você.');
@@ -141,7 +155,87 @@ export default function CheckinPage(): React.ReactElement {
           ))}
         </div>
 
-        <div className="mt-10 rounded-2xl border border-rule bg-surface p-5">
+        {/* Sinais do dia — Etapa 3 */}
+        <div className="mt-10 rounded-2xl border border-rule bg-surface p-5 space-y-5">
+          <div>
+            <p className="type-eyebrow mb-1 text-[10px] uppercase tracking-wider not-italic font-semibold">
+              — sinais do dia
+            </p>
+            <h3 className="font-display italic text-lg text-heading tracking-tight">
+              O corpo e a rotina.
+            </h3>
+            <p className="text-xs text-muted mt-1">Rápido — 30 segundos.</p>
+          </div>
+
+          {/* Sono */}
+          <div>
+            <label className="text-sm font-semibold text-heading">Dormiu quantas horas?</label>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {[4, 5, 6, 7, 8, 9].map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => setSleepHours(sleepHours === h ? null : h)}
+                  className={`h-9 min-w-[42px] px-3 rounded-full text-xs font-semibold border transition-colors ${
+                    sleepHours === h
+                      ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+                      : 'bg-bg text-text border-rule hover:border-primary/40'
+                  }`}
+                >
+                  {h}h
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setSleepHours(sleepHours === -1 ? null : -1)}
+                className={`h-9 px-3 rounded-full text-xs font-semibold border transition-colors ${
+                  sleepHours === -1
+                    ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+                    : 'bg-bg text-text border-rule hover:border-primary/40'
+                }`}
+              >
+                — não sei
+              </button>
+            </div>
+          </div>
+
+          <YesNo
+            label="Se exercitou hoje?"
+            value={exercisedToday}
+            onChange={setExercisedToday}
+          />
+
+          <YesNo label="Tiveram atrito hoje?" value={frictionToday} onChange={setFrictionToday} />
+          {frictionToday === true && (
+            <input
+              type="text"
+              value={frictionNote}
+              onChange={(e) => setFrictionNote(e.target.value)}
+              maxLength={500}
+              placeholder="Sobre o quê? (opcional)"
+              className="w-full h-10 px-3 rounded-lg border border-rule bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          )}
+
+          <YesNo label="Teve intimidade hoje?" value={intimacyToday} onChange={setIntimacyToday} />
+
+          <div>
+            <label className="text-sm font-semibold text-heading">
+              Uma coisa boa que aconteceu hoje?
+            </label>
+            <p className="text-xs text-muted mt-0.5 mb-2">Uma frase. Do dia a dia mesmo.</p>
+            <input
+              type="text"
+              value={positiveMemory}
+              onChange={(e) => setPositiveMemory(e.target.value)}
+              maxLength={500}
+              placeholder='Ex: "café da manhã sem pressa"'
+              className="w-full h-10 px-3 rounded-lg border border-rule bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-rule bg-surface p-5">
           <h3 className="font-display text-lg text-heading tracking-tight mb-1">
             Tem alguma coisa te incomodando que vocês ainda não conversaram?
           </h3>
@@ -230,6 +324,44 @@ export default function CheckinPage(): React.ReactElement {
           </Link>
         </div>
       </main>
+    </div>
+  );
+}
+
+function YesNo({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean | null;
+  onChange: (v: boolean | null) => void;
+}): React.ReactElement {
+  return (
+    <div>
+      <p className="text-sm font-semibold text-heading">{label}</p>
+      <div className="mt-2 flex gap-2">
+        {[
+          { v: true, label: 'Sim' },
+          { v: false, label: 'Não' },
+        ].map((opt) => {
+          const active = value === opt.v;
+          return (
+            <button
+              key={String(opt.v)}
+              type="button"
+              onClick={() => onChange(active ? null : opt.v)}
+              className={`flex-1 h-9 rounded-full text-xs font-semibold border transition-colors ${
+                active
+                  ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+                  : 'bg-bg text-text border-rule hover:border-primary/40'
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
