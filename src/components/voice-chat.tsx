@@ -59,6 +59,8 @@ interface VoiceChatProps {
   ttsText?: string | null;
   dialogueMode: boolean;
   onToggleDialogueMode: () => void;
+  hideDialogueButton?: boolean;
+  size?: 'sm' | 'md';
 }
 
 export function VoiceChat({
@@ -67,7 +69,11 @@ export function VoiceChat({
   ttsText,
   dialogueMode,
   onToggleDialogueMode,
+  hideDialogueButton = false,
+  size = 'md',
 }: VoiceChatProps): React.ReactElement | null {
+  const sz = size === 'sm' ? 'h-9 w-9' : 'h-11 w-11';
+  const iconSz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -183,31 +189,66 @@ export function VoiceChat({
         disabled={isSending}
         aria-label={listening ? 'Parar de gravar' : 'Falar'}
         title={listening ? 'Parar de gravar' : 'Falar'}
-        className={`h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-colors border ${
+        className={`${sz} shrink-0 rounded-full flex items-center justify-center transition-colors border ${
           listening
             ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary animate-pulse'
             : 'bg-bg text-primary border-primary/50 hover:bg-primary/10'
         } disabled:opacity-40 disabled:pointer-events-none`}
       >
-        {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+        {listening ? <MicOff className={iconSz} /> : <Mic className={iconSz} />}
       </button>
-      <button
-        type="button"
-        onClick={onToggleDialogueMode}
-        aria-label={dialogueMode ? 'Sair do modo diálogo' : 'Entrar no modo diálogo por voz'}
-        title={
-          dialogueMode
-            ? 'Modo diálogo ligado — desliga pra voltar a digitar'
-            : 'Modo diálogo por voz — fala e a LOVE responde por voz continuamente'
-        }
-        className={`h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-colors border ${
-          dialogueMode
-            ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
-            : 'bg-bg text-muted border-rule hover:text-primary hover:border-primary/50'
-        }`}
-      >
-        {dialogueMode ? <Radio className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
-      </button>
+      {!hideDialogueButton && (
+        <button
+          type="button"
+          onClick={onToggleDialogueMode}
+          aria-label={dialogueMode ? 'Sair do modo diálogo' : 'Entrar no modo diálogo por voz'}
+          title={
+            dialogueMode
+              ? 'Modo diálogo ligado — desliga pra voltar a digitar'
+              : 'Modo diálogo por voz — fala e a LOVE responde por voz continuamente'
+          }
+          className={`${sz} shrink-0 rounded-full flex items-center justify-center transition-colors border ${
+            dialogueMode
+              ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+              : 'bg-bg text-muted border-rule hover:text-primary hover:border-primary/50'
+          }`}
+        >
+          {dialogueMode ? <Radio className={iconSz} /> : <MessageCircle className={iconSz} />}
+        </button>
+      )}
     </div>
+  );
+}
+
+/** Botão isolado do modo diálogo — pra empilhar em outro lugar */
+export function DialogueToggleButton({
+  dialogueMode,
+  onToggle,
+  size = 'sm',
+}: {
+  dialogueMode: boolean;
+  onToggle: () => void;
+  size?: 'sm' | 'md';
+}): React.ReactElement {
+  const sz = size === 'sm' ? 'h-9 w-9' : 'h-11 w-11';
+  const iconSz = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={dialogueMode ? 'Sair do modo diálogo' : 'Modo diálogo por voz'}
+      title={
+        dialogueMode
+          ? 'Modo diálogo ligado'
+          : 'Modo diálogo por voz — fala e ouve'
+      }
+      className={`${sz} shrink-0 rounded-full flex items-center justify-center transition-colors border ${
+        dialogueMode
+          ? 'bg-primary text-[hsl(var(--primary-fg))] border-primary'
+          : 'bg-bg text-muted border-rule hover:text-primary hover:border-primary/50'
+      }`}
+    >
+      {dialogueMode ? <Radio className={iconSz} /> : <MessageCircle className={iconSz} />}
+    </button>
   );
 }

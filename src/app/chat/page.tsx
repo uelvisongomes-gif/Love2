@@ -1,12 +1,11 @@
 'use client';
 import { Suspense, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { toast } from 'sonner';
 import { Send } from 'lucide-react';
 import { AppHeader } from '@/components/app-header';
 import { ChatMessage, TypingIndicator } from '@/components/chat-message';
-import { VoiceChat } from '@/components/voice-chat';
+import { VoiceChat, DialogueToggleButton } from '@/components/voice-chat';
 import { apiClient } from '@/lib/api-client';
 
 interface Message {
@@ -285,7 +284,7 @@ function ChatPageInner(): React.ReactElement {
           onSubmit={onSend}
           className="sticky bottom-0 bg-bg pt-3 pb-4 border-t border-rule"
         >
-          <div className="flex items-end gap-3">
+          <div className="flex items-end gap-2">
             <textarea
               ref={textareaRef}
               value={input}
@@ -303,25 +302,23 @@ function ChatPageInner(): React.ReactElement {
               ttsText={lastAssistantSpeech}
               dialogueMode={dialogueMode}
               onToggleDialogueMode={() => setDialogueMode((v) => !v)}
+              hideDialogueButton
+              size="sm"
             />
-            <button
-              type="submit"
-              disabled={!input.trim() || sending}
-              className="h-11 w-11 shrink-0 rounded-full bg-primary text-[hsl(var(--primary-fg))] flex items-center justify-center hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
-              aria-label="Enviar"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="mt-2 flex justify-between text-[11px] text-muted font-medium">
-            <span>
-              {dialogueMode
-                ? '📻 Modo diálogo — fala e a LOVE responde por voz'
-                : '🎤 pra falar · 📻 pra modo diálogo por voz contínuo'}
-            </span>
-            <div className="flex items-center gap-3">
-              <Link href="/acordos" className="hover:text-heading">Acordos</Link>
-              <Link href="/home" className="hover:text-heading">← Início</Link>
+            <div className="flex flex-col gap-1.5">
+              <DialogueToggleButton
+                dialogueMode={dialogueMode}
+                onToggle={() => setDialogueMode((v) => !v)}
+                size="sm"
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || sending}
+                className="h-9 w-9 shrink-0 rounded-full bg-primary text-[hsl(var(--primary-fg))] flex items-center justify-center hover:bg-primary/90 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                aria-label="Enviar"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </form>
