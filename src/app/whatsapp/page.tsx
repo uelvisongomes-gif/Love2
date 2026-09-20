@@ -23,6 +23,7 @@ export default function WhatsAppPage(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [copiedField, setCopiedField] = useState<'code' | 'number' | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
     try {
@@ -39,6 +40,7 @@ export default function WhatsAppPage(): React.ReactElement {
 
   const generateCode = async (): Promise<void> => {
     setBusy(true);
+    setErr(null);
     try {
       const res = await apiClient<CodeResponse>('/api/wame/link', { method: 'POST' });
       if (res.alreadyLinked) {
@@ -47,7 +49,11 @@ export default function WhatsAppPage(): React.ReactElement {
       }
       if (res.code && res.expiresAt) {
         setCode({ value: res.code, expiresAt: res.expiresAt });
+      } else {
+        setErr('Backend não retornou código. Resposta: ' + JSON.stringify(res).slice(0, 200));
       }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Erro ao gerar código');
     } finally {
       setBusy(false);
     }
@@ -188,15 +194,22 @@ export default function WhatsAppPage(): React.ReactElement {
                   </h2>
 
                   {!code ? (
-                    <button
-                      type="button"
-                      onClick={() => void generateCode()}
-                      disabled={busy || !status.loveNumber}
-                      className="w-full h-12 rounded-lg bg-primary text-[hsl(var(--primary-fg))] text-sm font-semibold hover:opacity-95 disabled:opacity-60 inline-flex items-center justify-center gap-2"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${busy ? 'animate-spin' : ''}`} />
-                      {busy ? 'Gerando…' : 'Gerar código de 6 dígitos'}
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => void generateCode()}
+                        disabled={busy || !status.loveNumber}
+                        className="w-full h-12 rounded-lg bg-primary text-[hsl(var(--primary-fg))] text-sm font-semibold hover:opacity-95 disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${busy ? 'animate-spin' : ''}`} />
+                        {busy ? 'Gerando…' : 'Gerar código de 6 dígitos'}
+                      </button>
+                      {err && (
+                        <p className="mt-2 text-xs text-danger bg-danger/10 border border-danger/30 rounded-lg p-2">
+                          {err}
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 p-3 rounded-lg bg-bg border border-primary/40">
