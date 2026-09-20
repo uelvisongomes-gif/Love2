@@ -15,6 +15,7 @@ import {
   BookLock,
   Settings,
   LogOut,
+  TrendingUp,
 } from 'lucide-react';
 
 interface NavItem {
@@ -38,6 +39,7 @@ const SECTIONS: Section[] = [
     items: [
       { href: '/cuidar', icon: <Sparkles className="w-4 h-4" />, label: 'Cuidar', hint: 'espaço, escuta, ciclo' },
       { href: '/checkin', icon: <Sprout className="w-4 h-4" />, label: 'Check-in', hint: 'como você está hoje' },
+      { href: '/evolucao', icon: <TrendingUp className="w-4 h-4" />, label: 'Evolução', hint: 'como vocês têm ido' },
     ],
   },
   {

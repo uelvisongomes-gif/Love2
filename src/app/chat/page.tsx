@@ -262,7 +262,13 @@ function ChatPageInner(): React.ReactElement {
 
         {/* messages */}
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto py-4 space-y-6">
-          {empty && <EmptyState contextData={CONTEXTS.find((c) => c.value === context)!} />}
+          {empty && (
+            <EmptyState
+              contextData={CONTEXTS.find((c) => c.value === context)!}
+              context={context}
+              onQuickPrompt={(text) => void sendContent(text)}
+            />
+          )}
           {messages.map((m) => (
             <ChatMessage
               key={m.id}
@@ -371,19 +377,67 @@ function ChatPageInner(): React.ReactElement {
   );
 }
 
+const QUICK_PROMPTS: Record<Context, string[]> = {
+  general: [
+    'Me ajuda a pensar sobre uma decisão',
+    'Tive um dia estranho, quero conversar',
+    'Como falar sobre X com meu parceiro?',
+  ],
+  conflict: [
+    'A gente brigou hoje',
+    'Estamos em climão há dias',
+    'Preciso de ajuda pra pedir desculpa',
+  ],
+  'check-in': [
+    'Como foi meu dia com ele/ela',
+    'Tô sentindo distância',
+    'Tive um momento bom hoje',
+  ],
+  journal: [
+    'Preciso desabafar',
+    'Só quero botar pra fora',
+    'Tô cansado(a) e ninguém pra ouvir',
+  ],
+};
+
 function EmptyState({
   contextData,
+  context,
+  onQuickPrompt,
 }: {
   contextData: { label: string; description: string; intro: string };
+  context: Context;
+  onQuickPrompt: (text: string) => void;
 }): React.ReactElement {
   return (
-    <div className="py-10 text-center max-w-md mx-auto space-y-4">
-      <p className="type-eyebrow">— modo {contextData.label.toLowerCase()}</p>
-      <h2 className="font-display text-3xl text-heading tracking-tight">
-        {contextData.description}
-      </h2>
-      <p className="text-text font-medium leading-relaxed">{contextData.intro}</p>
-      <p className="text-xs text-muted font-medium pt-2 max-w-sm mx-auto">
+    <div className="py-10 max-w-md mx-auto space-y-6">
+      <div className="text-center space-y-4">
+        <p className="type-eyebrow">— modo {contextData.label.toLowerCase()}</p>
+        <h2 className="font-display text-3xl text-heading tracking-tight">
+          {contextData.description}
+        </h2>
+        <p className="text-text font-medium leading-relaxed">{contextData.intro}</p>
+      </div>
+
+      <div>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-muted mb-2 text-center">
+          — ou toque num pra começar
+        </p>
+        <div className="flex flex-col gap-2">
+          {QUICK_PROMPTS[context].map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => onQuickPrompt(p)}
+              className="text-left text-sm px-4 py-2.5 rounded-lg border border-rule bg-surface hover:border-primary/40 hover:bg-primary/5 transition-colors"
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className="text-xs text-muted font-medium text-center max-w-sm mx-auto">
         Sou a LOVE — mediadora, não psicóloga nem terapeuta.
       </p>
     </div>
