@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import {
   MessageCircleHeart,
-  BookHeart,
   Sprout,
   Flame,
   Handshake,
@@ -31,15 +30,8 @@ const CUIDAR: CardDef[] = [
   {
     href: '/chat',
     icon: <MessageCircleHeart className="w-5 h-5" />,
-    title: 'Conversar',
-    description: 'Um bate-papo pra pensar em voz alta com a LOVE.',
-    privacy: 'privado',
-  },
-  {
-    href: '/chat?modo=journal',
-    icon: <BookHeart className="w-5 h-5" />,
-    title: 'Só desabafar',
-    description: 'Espaço pra falar sem receber conselho.',
+    title: 'Conversar com a LOVE',
+    description: 'Bate-papo, desabafo ou reflexão — você escolhe o tom na hora.',
     privacy: 'privado',
   },
   {
