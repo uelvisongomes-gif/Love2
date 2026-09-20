@@ -3,7 +3,15 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AppHeader } from '@/components/app-header';
 import { apiClient } from '@/lib/api-client';
-import { Sparkles, Moon, Flame, Heart, Dumbbell, HeartHandshake } from 'lucide-react';
+import {
+  Sparkles,
+  Moon,
+  Flame,
+  Heart,
+  Dumbbell,
+  HeartHandshake,
+  ChevronRight,
+} from 'lucide-react';
 
 interface DailyRow {
   date: string;
@@ -35,6 +43,7 @@ interface EvolutionData {
     positiveMemories: number;
     exerciseDays: number;
     avgSleep: number | null;
+    topFrictionReasons: { label: string; count: number }[];
   };
 }
 
@@ -138,6 +147,50 @@ export default function EvolucaoPage(): React.ReactElement {
                 value={`${data.summary.positiveMemories}`}
               />
             </section>
+
+            {/* TOP MOTIVOS DE ATRITO */}
+            {data.summary.topFrictionReasons.length > 0 && (
+              <section className="rounded-2xl border border-danger/30 bg-danger/5 p-5">
+                <header className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="type-eyebrow mb-1 text-[10px] uppercase tracking-wider not-italic font-semibold text-danger">
+                      — motivos de atrito
+                    </p>
+                    <h3 className="font-display italic text-lg text-heading tracking-tight">
+                      No que vocês mais batem cabeça
+                    </h3>
+                    <p className="text-xs text-text/70 mt-1">
+                      Categorias identificadas nas notas do check-in.
+                    </p>
+                  </div>
+                </header>
+                <ul className="space-y-2">
+                  {data.summary.topFrictionReasons.map((r, i) => (
+                    <li key={r.label}>
+                      <Link
+                        href={`/evolucao/atritos?motivo=${encodeURIComponent(r.label)}`}
+                        className="flex items-center gap-3 rounded-lg border border-danger/20 bg-bg hover:border-danger/40 hover:bg-danger/10 transition-colors p-3"
+                      >
+                        <span className="w-7 h-7 rounded-full bg-danger/15 text-danger flex items-center justify-center text-sm font-semibold">
+                          {i + 1}
+                        </span>
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-sm font-semibold text-heading">{r.label}</span>
+                          <span className="block text-xs text-text/70">
+                            {r.count} {r.count === 1 ? 'ocorrência' : 'ocorrências'}
+                          </span>
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-danger/60" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[11px] text-muted mt-3 leading-relaxed">
+                  Toca num motivo pra abrir o detalhamento — quem começa, quem propõe reconciliação,
+                  quem foge do diálogo.
+                </p>
+              </section>
+            )}
 
             {/* SPARKLINES */}
             <section className="space-y-3">

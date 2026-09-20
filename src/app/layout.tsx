@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { QueryProvider } from '@/lib/query-provider';
 import { InstallPWA } from '@/components/install-pwa';
 import { ServiceWorkerRegister } from '@/components/sw-register';
+import { SwipeBack } from '@/components/swipe-back';
 import './globals.css';
 
 const manrope = Manrope({
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <ServiceWorkerRegister />
+          <SwipeBack />
           {children}
           <InstallPWA />
           <Toaster position="top-center" richColors />
