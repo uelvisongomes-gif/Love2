@@ -71,6 +71,12 @@
     body {
       padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
     }
+    /* Previne iOS Safari de dar zoom automático quando focar input com font < 16px */
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
 
   h1, h2, h3, h4 {
